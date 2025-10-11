@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "353910506799",
+    "project_id": "bharatnaai-a482c",
+    "storage_bucket": "bharatnaai-a482c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:353910506799:android:4d4677a617b281c3d4cdda",
+        "android_client_info": {
+          "package_name": "com.app.bharatnaai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "353910506799-e2liaqqqbg5pkli8jhpp7ml1rrkbb46o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.bharatnaai",
+            "certificate_hash": "1bd3cd48bb773d75d64f67d3bfa712456a40e9a8"
+          }
+        },
+        {
+          "client_id": "353910506799-itga1783tnccj6nr3ajskj9uhf6h8u55.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB39HeeCIXmYtH5Dmg6KusJzV-HmA0FqJk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "353910506799-itga1783tnccj6nr3ajskj9uhf6h8u55.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

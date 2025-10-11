@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default Colors -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- BharatNaai Brand Colors -->
+    <color name="primary_color">#FFA726</color> <!-- Orange/Golden -->
+    <color name="primary_dark">#FF8F00</color>
+    <color name="accent_color">#FFA726</color>
+    
+    <!-- Background Colors -->
+    <color name="splash_background">#221C10</color> <!-- Very Dark Background -->
+    <color name="background_light">#FFFFFF</color>
+    <color name="background_dark">#121212</color>
+    <color name="surface_color">#1E1E1E</color>
+    
+    <!-- Text Colors -->
+    <color name="primary_text_color">#FFFFFF</color>
+    <color name="secondary_text_color">#9E9E9E</color>
+    <color name="text_on_primary">#000000</color>
+    <color name="hint_text_color">#BFB7B7</color>
+    
+    <!-- Logo Colors -->
+    <color name="logo_background">#FFA726</color>
+    <color name="logo_icon_color">#2C2C2C</color>
+    
+    <!-- Status Colors -->
+    <color name="success_color">#4CAF50</color>
+    <color name="error_color">#F44336</color>
+    <color name="warning_color">#FF9800</color>
+    
+    <!-- Additional UI Colors -->
+    <color name="divider_color">#E0E0E0</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="button_disabled">#CCCCCC</color>
+    
+    <!-- Input Field Colors -->
+    <color name="input_background">#2D3748</color> <!-- Dark Blue Gray -->
+    <color name="social_button_background">#2D3748</color>
+    
+    <!-- Button Colors -->
+    <color name="button_primary_start">#FFB74D</color>
+    <color name="button_primary_end">#FF9800</color>
+</resources>

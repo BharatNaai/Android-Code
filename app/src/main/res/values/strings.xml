@@ -1,0 +1,52 @@
+<resources>
+    <string name="app_name">bharatnaai</string>
+
+    <string name="default_web_client_id">353910506799-itga1783tnccj6nr3ajskj9uhf6h8u55.apps.googleusercontent.com</string>
+
+    <!-- Splash Screen -->
+    <string name="app_title">Salon &amp; Barber</string>
+    <string name="app_subtitle">Book your next appointment with ease</string>
+    <string name="app_logo">BharatNaai Logo</string>
+    
+    <!-- Alternative taglines for BharatNaai -->
+    <string name="tagline_1">Book your naai appointment with ease</string>
+    <string name="tagline_2">Your trusted barber, just a tap away</string>
+    <string name="tagline_3">Premium grooming at your convenience</string>
+    <string name="tagline_4">Find the perfect barber near you</string>
+    
+    <!-- Common UI Strings -->
+    <string name="loading">Loading...</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_in">Sign In</string>
+    <string name="register">Register</string>
+    <string name="login">Login</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="success_registration">Registration successful!</string>
+    <string name="back_arrow_button">back arrow button</string>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="bookings">Bookings</string>
+    <string name="profile">Profile</string>
+    <string name="register_yourself">Register Yourself</string>
+    <string name="full_name">Full Name</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="_sign_up">Sign Up</string>
+    <string name="or_sign_up_with">OR Sign Up With</string>
+    <string name="google_button">google button</string>
+    <string name="facebook_button">Facebook button</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="instagram_button">Instagram button</string>
+    <string name="continue_with_google">Continue with Google</string>
+    <string name="continue_with_facebook">Continue with Facebook</string>
+    <string name="continue_with_apple">Continue with Apple</string>
+    <string name="welcome_back">Welcome Back</string>
+    <string name="log_in_to_continue_your_beauty_journey">Log in to continue your beauty journey.</string>
+    <string name="email_or_phone">Email or Phone</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="notificationicon">notificationIcon</string>
+    <string name="profileicon">profileIcon</string>
+    <string name="search_salons_services">Search salons, services...</string>
+</resources>
