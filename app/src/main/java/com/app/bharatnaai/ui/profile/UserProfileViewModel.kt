@@ -4,27 +4,22 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.app.bharatnaai.data.model.CustomerDetails
 import com.app.bharatnaai.data.repository.AuthRepository
+import com.app.bharatnaai.utils.PreferenceManager
 
-data class UserProfile(
-    val id: String,
-    val name: String,
-    val phoneNumber: String,
-    val email: String,
-    val profileImageUrl: String? = null
-)
 
 data class ProfileState(
     val isLoggedIn: Boolean = false,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val userProfile: UserProfile? = null
+    val customerDetails: CustomerDetails? = null
 )
 
 class UserProfileViewModel(application: Application) : AndroidViewModel(application) {
     
     private val authRepository = AuthRepository(application.applicationContext)
-    
+
     private val _profileState = MutableLiveData<ProfileState>()
     val profileState: LiveData<ProfileState> = _profileState
     
@@ -46,17 +41,18 @@ class UserProfileViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
     
-    private fun loadUserProfile() {
+    fun loadUserProfile() {
+        val context = getApplication<Application>().applicationContext
+
         // Mock user profile data
-        val mockProfile = UserProfile(
-            id = "1",
-            name = "Sophia Carter",
-            phoneNumber = "+1 (555) 123-4567",
-            email = "sophia.carter@email.com"
+        val profileData = CustomerDetails(
+            name = PreferenceManager.getUserName(context)?:"",
+            phone = PreferenceManager.getUserPhone(context)?:"",
+            email = PreferenceManager.getUserEmail(context)?:""
         )
         
         _profileState.value = _profileState.value?.copy(
-            userProfile = mockProfile
+            customerDetails = profileData
         )
     }
     

@@ -1,6 +1,7 @@
 package com.app.bharatnaai.data.network
 
 import com.app.bharatnaai.data.model.ApiResponse
+import com.app.bharatnaai.data.model.CustomerDetails
 import com.app.bharatnaai.data.model.ForgetPasswordRequest
 import com.app.bharatnaai.data.model.ForgetPasswordResponse
 import com.app.bharatnaai.data.model.LoginRequest
@@ -16,6 +17,7 @@ import com.app.bharatnaai.data.model.TokenRefreshResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface ApiService {
@@ -49,4 +51,9 @@ interface ApiService {
     suspend fun getNearbySaloonDetails(
         @Body salonDetailsRequest: SaloonDetailsRequest
     ): Response<SaloonDetailsResponse>
+
+    @GET("auth/customerdetails")
+    suspend fun getCustomerDetails(
+        @Header("Authorization") accessToken : String
+    ) :Response<CustomerDetails>
 }

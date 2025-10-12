@@ -10,17 +10,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="100dp">
+        android:paddingBottom="80dp">
 
         <!-- Header Section -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/header_section"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingStart="20dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="20dp"
-            android:paddingBottom="16dp"
+            android:padding="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -33,6 +30,7 @@
                 android:src="@drawable/ic_arrow_back"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="4dp"
+                android:visibility="invisible"
                 app:tint="@color/primary_text_color"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -45,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:text="Profile"
                 android:textColor="@color/primary_text_color"
-                android:textSize="20sp"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 android:fontFamily="sans-serif-medium"
                 app:layout_constraintStart_toStartOf="parent"
@@ -55,13 +53,13 @@
 
             <!-- Edit Button -->
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/btn_edit"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:id="@+id/iv_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:src="@drawable/ic_edit"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="4dp"
                 app:tint="@color/primary_text_color"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />

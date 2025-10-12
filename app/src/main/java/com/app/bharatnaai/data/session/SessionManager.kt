@@ -6,6 +6,7 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import org.json.JSONObject
 import android.util.Base64
+import com.app.bharatnaai.utils.Constants.KEY_ACCESS_TOKEN
 
 
 class SessionManager private constructor(private val context: Context) {
@@ -15,7 +16,6 @@ class SessionManager private constructor(private val context: Context) {
         private var INSTANCE: SessionManager? = null
         
         private const val PREF_NAME = "bharatnaai_session"
-        private const val KEY_ACCESS_TOKEN = "access_token"
         private const val KEY_REFRESH_TOKEN = "refresh_token"
         private const val KEY_IS_LOGGED_IN = "is_logged_in"
         

@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/splash_background"
-    tools:context="com.app.bharatnaai.MainActivity">
+    tools:context="com.app.bharatnaai.ui.main.MainActivity">
 
     <!-- Fragment Container -->
     <FrameLayout

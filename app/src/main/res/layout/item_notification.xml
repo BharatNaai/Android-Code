@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="6dp"
+    android:background="@drawable/notification_card_background"
+    android:padding="16dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- Notification Icon -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/icon_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/circle_background"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_notification_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:src="@drawable/ic_calendar_notification"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_calendar_notification" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Notification Content -->
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/content_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/icon_container"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Notification Message -->
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_notification_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_medium"
+            android:lineSpacingExtra="2dp"
+            android:textColor="@color/primary_text_color"
+            android:textSize="14sp"
+            tools:text="Your appointment with Alex at The Barber Shop is confirmed." />
+
+        <!-- Notification Time -->
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_notification_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/poppins_regular"
+            android:textColor="@color/secondary_text_color"
+            android:textSize="12sp"
+            tools:text="10:00 AM" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.constraintlayout.widget.ConstraintLayout>

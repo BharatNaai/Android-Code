@@ -1,6 +1,7 @@
 package com.app.bharatnaai.ui.profile
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,12 +13,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.bharatnaai.ui.auth.login.LoginActivity
 import bharatnaai.databinding.FragmentUserProfileBinding
+import com.app.bharatnaai.utils.PreferenceManager
 
 class UserProfileFragment : Fragment() {
     
     private var _binding: FragmentUserProfileBinding? = null
     private val binding get() = _binding!!
-    
+
     private val viewModel: UserProfileViewModel by lazy {
         ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application))
             .get(UserProfileViewModel::class.java)
@@ -94,14 +96,19 @@ class UserProfileFragment : Fragment() {
             // Show logged-in content
             binding.loggedInContent.visibility = View.VISIBLE
             binding.loggedOutContent.visibility = View.GONE
+            binding.ivEdit.visibility = View.VISIBLE
             
             // Update user profile info
-            state.userProfile?.let { profile ->
-                binding.tvUserName.text = profile.name
-                binding.tvPhoneNumber.text = profile.phoneNumber
-                binding.tvEmail.text = profile.email
-                // TODO: Load profile image using Glide/Picasso
-            }
+//            state.customerDetails?.let { profile ->
+//                binding.tvUserName.text = profile.name
+//                binding.tvPhoneNumber.text = profile.phone
+//                binding.tvEmail.text = profile.email
+//                // TODO: Load profile image using Glide/Picasso
+//            }
+            val context = requireContext()
+            binding.tvUserName.text = PreferenceManager.getUserName(context) ?: "N/A"
+            binding.tvEmail.text = PreferenceManager.getUserEmail(context) ?: "N/A"
+            binding.tvPhoneNumber.text = PreferenceManager.getUserPhone(context) ?: "N/A"
         } else {
             // Show logged-out content
             binding.loggedInContent.visibility = View.GONE
@@ -122,8 +129,12 @@ class UserProfileFragment : Fragment() {
         }
         
         // Edit button
-        binding.btnEdit.setOnClickListener {
-            Toast.makeText(context, "Edit profile - Coming soon!", Toast.LENGTH_SHORT).show()
+        binding.ivEdit.setOnClickListener {
+            val editProfileFragment = EditProfileFragment.newInstance()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(bharatnaai.R.id.fragment_container, editProfileFragment)
+                .addToBackStack(null)
+                .commit()
         }
         
         // Logout button
@@ -148,6 +159,7 @@ class UserProfileFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        viewModel.loadUserProfile()
     }
     
     override fun onDestroyView() {

@@ -11,7 +11,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.app.bharatnaai.MainActivity
+import com.app.bharatnaai.ui.main.MainActivity
 import com.app.bharatnaai.ui.auth.register.RegisterActivity
 import bharatnaai.R
 import bharatnaai.databinding.ActivityLoginBinding

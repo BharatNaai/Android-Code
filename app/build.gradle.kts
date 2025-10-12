@@ -78,6 +78,9 @@ dependencies {
     // Location Services
     implementation("com.google.android.gms:play-services-location:21.0.1")
 
+    // Image Loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

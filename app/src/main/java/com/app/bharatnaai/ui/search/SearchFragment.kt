@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.bharatnaai.ui.saloon_details.SaloonDetailsFragment
 import bharatnaai.R
 import bharatnaai.databinding.FragmentSearchBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class SearchFragment : Fragment() {
 
@@ -67,6 +68,9 @@ class SearchFragment : Fragment() {
         // Back button
         binding.ivBack.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
+
+            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation)
+            bottomNav.selectedItemId = R.id.nav_home
         }
 
         // Clear search

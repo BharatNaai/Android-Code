@@ -133,7 +133,7 @@
                 android:background="@drawable/profile_circle_background"
                 android:padding="2dp"
                 android:contentDescription="@string/profileicon"
-                android:src="@drawable/ic_person"
+                android:src="@drawable/ic_night_mode"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackgroundBorderless" />

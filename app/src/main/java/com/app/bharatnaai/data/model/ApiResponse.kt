@@ -75,3 +75,9 @@ data class Barber(
     val email: String
 )
 
+data class CustomerDetails(
+    val name: String,
+    val email: String,
+    val phone: String
+)
+

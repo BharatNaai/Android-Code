@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
-import com.app.bharatnaai.MainActivity
+import com.app.bharatnaai.ui.main.MainActivity
 import bharatnaai.databinding.ActivitySplashBinding
 
 class SplashActivity : AppCompatActivity() {

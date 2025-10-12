@@ -46,9 +46,9 @@
             android:exported="false" />
 
         <activity
-            android:name="com.app.bharatnaai.MainActivity"
+            android:name="com.app.bharatnaai.ui.main.MainActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
+            android:windowSoftInputMode="adjustNothing" />
 
     </application>
 

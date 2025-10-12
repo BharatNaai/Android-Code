@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import bharatnaai.R
 import bharatnaai.databinding.FragmentHomeBinding
 import com.app.bharatnaai.ui.search.SearchFragment
+import com.app.bharatnaai.ui.notifications.NotificationFragment
 import com.app.bharatnaai.utils.LocationHelper
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class HomeFragment : Fragment() {
     
@@ -122,6 +124,15 @@ class HomeFragment : Fragment() {
             requestLocationPermission()
         }
 
+        // Notification click - navigate to notifications screen
+        binding.notificationContainer.setOnClickListener {
+            val notificationFragment = NotificationFragment.newInstance()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, notificationFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+
         // Search functionality
         binding.searchBar.setOnClickListener{
             val searchfrag = SearchFragment()
@@ -129,6 +140,10 @@ class HomeFragment : Fragment() {
                 .replace(R.id.fragment_container, searchfrag)
                 .addToBackStack(null)
                 .commit()
+
+            // ✅ Update BottomNavigationView to highlight the Search tab
+            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation)
+            bottomNav.selectedItemId = R.id.nav_search
         }
 
         // Note: Exclusive offers now handled by RecyclerView adapter
