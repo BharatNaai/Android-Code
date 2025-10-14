@@ -46,7 +46,7 @@ class UserProfileViewModel(application: Application) : AndroidViewModel(applicat
 
         // Mock user profile data
         val profileData = CustomerDetails(
-            name = PreferenceManager.getUserName(context)?:"",
+            fullName = PreferenceManager.getUserName(context)?:"",
             phone = PreferenceManager.getUserPhone(context)?:"",
             email = PreferenceManager.getUserEmail(context)?:""
         )

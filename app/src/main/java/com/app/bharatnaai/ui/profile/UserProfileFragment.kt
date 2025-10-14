@@ -97,14 +97,7 @@ class UserProfileFragment : Fragment() {
             binding.loggedInContent.visibility = View.VISIBLE
             binding.loggedOutContent.visibility = View.GONE
             binding.ivEdit.visibility = View.VISIBLE
-            
-            // Update user profile info
-//            state.customerDetails?.let { profile ->
-//                binding.tvUserName.text = profile.name
-//                binding.tvPhoneNumber.text = profile.phone
-//                binding.tvEmail.text = profile.email
-//                // TODO: Load profile image using Glide/Picasso
-//            }
+
             val context = requireContext()
             binding.tvUserName.text = PreferenceManager.getUserName(context) ?: "N/A"
             binding.tvEmail.text = PreferenceManager.getUserEmail(context) ?: "N/A"

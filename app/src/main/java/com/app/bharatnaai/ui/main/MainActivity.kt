@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
             when (result) {
                 is ApiResult.Success -> {
                     val customerData = result.data
-                    PreferenceManager.saveUserName(this, customerData.name)
+                    PreferenceManager.saveUserName(this, customerData.fullName)
                     PreferenceManager.saveUserEmail(this, customerData.email)
                     PreferenceManager.saveUserPhone(this, customerData.phone)
                 }

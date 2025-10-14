@@ -31,8 +31,8 @@ class CustomerDetailsRepo(private val context: Context) {
                 val body = response.body()
                 if (body != null) {
                     val customerDetails = CustomerDetails(
-                        name = body.name,
                         email = body.email,
+                        fullName = body.fullName,
                         phone = body.phone
                     )
                     ApiResult.Success(customerDetails)
