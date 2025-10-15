@@ -49,4 +49,6 @@
     <string name="notificationicon">notificationIcon</string>
     <string name="profileicon">profileIcon</string>
     <string name="search_salons_services">Search salons, services...</string>
+    <string name="services">Services</string>
+    <string name="featured_salons_and_barbers"><![CDATA[Featured Salons & Barbers]]></string>
 </resources>

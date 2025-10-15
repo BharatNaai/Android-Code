@@ -219,17 +219,16 @@
             android:id="@+id/clMainLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="100dp">
+            android:padding="8dp">
 
                 <!-- Exclusive Offers RecyclerView -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_exclusive_offers"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="16dp"
                     android:orientation="horizontal"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
+                    android:paddingEnd="12dp"
                     android:clipToPadding="false"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -243,9 +242,8 @@
                     android:id="@+id/tv_featured_salons"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="32dp"
-                    android:text="Featured Salons &amp; Barbers"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/featured_salons_and_barbers"
                     android:textColor="@color/primary_text_color"
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -260,8 +258,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:orientation="horizontal"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
+                    android:paddingEnd="12dp"
                     android:clipToPadding="false"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -275,9 +272,8 @@
                     android:id="@+id/tv_services"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="32dp"
-                    android:text="Services"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/services"
                     android:textColor="@color/primary_text_color"
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -290,9 +286,7 @@
                     android:id="@+id/services_grid"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="20dp"
                     android:columnCount="2"
                     android:rowCount="2"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -313,8 +307,8 @@
                         android:padding="16dp">
 
                         <androidx.appcompat.widget.AppCompatImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_marginEnd="12dp"
                             android:src="@drawable/ic_haircut" />
 
@@ -342,8 +336,8 @@
                         android:padding="16dp">
 
                         <androidx.appcompat.widget.AppCompatImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_marginEnd="12dp"
                             android:src="@drawable/ic_shaving" />
 
@@ -370,8 +364,8 @@
                         android:padding="16dp">
 
                         <androidx.appcompat.widget.AppCompatImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_marginEnd="12dp"
                             android:src="@drawable/ic_grooming" />
 
@@ -397,8 +391,8 @@
                         android:padding="16dp">
 
                         <androidx.appcompat.widget.AppCompatImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_marginEnd="12dp"
                             android:src="@drawable/ic_packages" />
 

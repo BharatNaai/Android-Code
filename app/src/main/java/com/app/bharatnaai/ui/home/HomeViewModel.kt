@@ -136,14 +136,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
     
-    fun searchSalons(query: String) {
-        // TODO: Implement search functionality
-        _homeState.value = _homeState.value?.copy(isLoading = true)
-        
-        // Simulate search
-        // In real implementation, this would call a repository/API
-    }
-    
     fun clearError() {
         _homeState.value = _homeState.value?.copy(error = null)
     }
@@ -152,21 +144,45 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         // Mock data for exclusive offers
         val mockOffers = listOf(
             ExclusiveOffer(
-                id = "1",
-                title = "Exclusive Offers",
-                description = "Save up to 20% on your first booking",
+                    id = "1",
+                    title = "Exclusive Offers",
+                    description = "Save up to 20% on your first booking",
+                imageUrl = "https://media.istockphoto.com/id/1783519753/photo/young-woman-enjoying-while-getting-her-hair-washed-by-professional-hairdresser-at-salon.jpg?s=1024x1024&w=is&k=20&c=WkFrL5nT31nA23j5sePpr3zgbLOMqlMQ6G80x3UdfnA=",
                 discountPercentage = 20
             ),
             ExclusiveOffer(
                 id = "2",
                 title = "Weekend Special",
                 description = "Get 15% off on weekend appointments",
+                imageUrl = "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80",
                 discountPercentage = 15
             ),
             ExclusiveOffer(
                 id = "3",
                 title = "Premium Package",
                 description = "Complete grooming package at discounted rates",
+                imageUrl = "https://images.unsplash.com/photo-1623171678074-1b04ff0e694f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=2070",
+                discountPercentage = 25
+            ),
+            ExclusiveOffer(
+                id = "4",
+                title = "Exclusive Offers",
+                description = "Save up to 20% on your first booking",
+                imageUrl = "https://images.unsplash.com/photo-1623171678074-1b04ff0e694f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=2070",
+                discountPercentage = 20
+            ),
+            ExclusiveOffer(
+                id = "5",
+                title = "Weekend Special",
+                description = "Get 15% off on weekend appointments",
+                imageUrl = "https://media.istockphoto.com/id/1783229950/photo/woman-using-mobile-phone-while-getting-hair-treatment-under-a-professional-hair-steamer.jpg?s=1024x1024&w=is&k=20&c=YYOp-lds2_9_i7k3zEU4QGgdg_x5Cky-877BBBbvRj0=",
+                discountPercentage = 15
+            ),
+            ExclusiveOffer(
+                id = "6",
+                title = "Premium Package",
+                description = "Complete grooming package at discounted rates",
+                imageUrl = "https://media.istockphoto.com/id/1783519753/photo/young-woman-enjoying-while-getting-her-hair-washed-by-professional-hairdresser-at-salon.jpg?s=1024x1024&w=is&k=20&c=WkFrL5nT31nA23j5sePpr3zgbLOMqlMQ6G80x3UdfnA=",
                 discountPercentage = 25
             )
         )

@@ -53,9 +53,9 @@ data class ResetPasswordResponse(
 )
 
 data class SaloonDetailsResponse(
-    val success: Boolean,
+    val nearbySalons: List<Salon>,
     val message: String,
-    val nearbySalons: List<Salon>
+    val success: Boolean
 )
 
 data class Salon(
