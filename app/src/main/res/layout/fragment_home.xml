@@ -94,9 +94,9 @@
             <!-- Notification Icon -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/notification_container"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true">
@@ -118,8 +118,6 @@
                     android:id="@+id/notification_dot"
                     android:layout_width="8dp"
                     android:layout_height="8dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginEnd="6dp"
                     android:background="@drawable/notification_dot"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -128,11 +126,11 @@
             <!-- Profile Icon -->
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_profile"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:background="@drawable/profile_circle_background"
                 android:padding="2dp"
-                android:contentDescription="@string/profileicon"
+                android:contentDescription="@string/app_theme_mode"
                 android:src="@drawable/ic_night_mode"
                 android:clickable="true"
                 android:focusable="true"
@@ -194,7 +192,7 @@
                 android:src="@drawable/ic_filter"
                 android:clickable="true"
                 android:focusable="true"
-                android:contentDescription="filterButton"
+                android:contentDescription="@string/filterbutton"
                 android:foreground="?attr/selectableItemBackground"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -203,23 +201,28 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Scrollable Content -->
-    <ScrollView
-        android:id="@+id/content_scroll"
-        android:layout_width="0dp"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@id/header_container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- KEEP ALL THIS PART UNCHANGED -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/clMainLayout"
+        <!-- Scrollable Content -->
+        <ScrollView
+            android:id="@+id/content_scroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp">
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <!-- Main Content Layout -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clMainLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
 
                 <!-- Exclusive Offers RecyclerView -->
                 <androidx.recyclerview.widget.RecyclerView
@@ -238,18 +241,41 @@
                     tools:listitem="@layout/item_exclusive_offer" />
 
                 <!-- Featured Salons Section -->
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_featured_salons"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/featured_salons_header"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="@string/featured_salons_and_barbers"
-                    android:textColor="@color/primary_text_color"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:fontFamily="sans-serif-medium"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/rv_exclusive_offers" />
+                    app:layout_constraintTop_toBottomOf="@id/rv_exclusive_offers">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_featured_salons"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/featured_salons_and_barbers"
+                        android:textColor="@color/primary_text_color"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_refresh_hint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pull to refresh"
+                        android:textColor="@color/secondary_text_color"
+                        android:textSize="12sp"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <!-- Featured Salons RecyclerView -->
                 <androidx.recyclerview.widget.RecyclerView
@@ -262,7 +288,7 @@
                     android:clipToPadding="false"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_featured_salons"
+                    app:layout_constraintTop_toBottomOf="@id/featured_salons_header"
                     tools:itemCount="2"
                     tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_featured_salon" />
@@ -408,6 +434,8 @@
                 </GridLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </ScrollView>
+        </ScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -46,7 +46,9 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
-    
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+
     // Activity and Fragment
     implementation("androidx.activity:activity-ktx:1.9.2")
     implementation("androidx.fragment:fragment-ktx:1.6.2")

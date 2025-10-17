@@ -47,8 +47,9 @@
     <string name="email_or_phone">Email or Phone</string>
     <string name="forgot_password">Forgot Password?</string>
     <string name="notificationicon">notificationIcon</string>
-    <string name="profileicon">profileIcon</string>
     <string name="search_salons_services">Search salons, services...</string>
     <string name="services">Services</string>
     <string name="featured_salons_and_barbers"><![CDATA[Featured Salons & Barbers]]></string>
+    <string name="filterbutton">filterButton</string>
+    <string name="app_theme_mode">app_theme_mode</string>
 </resources>
