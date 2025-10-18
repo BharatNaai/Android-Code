@@ -5,7 +5,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import bharatnaai.R
 import bharatnaai.databinding.ItemSalonSearchBinding
+import com.bumptech.glide.Glide
+import com.app.bharatnaai.data.model.Salon
+import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.model.LazyHeaders
+import com.app.bharatnaai.data.session.SessionManager
+import com.app.bharatnaai.utils.Constants
 
 class SalonSearchAdapter(
     private val onSalonClick: (Salon) -> Unit,
@@ -31,25 +38,41 @@ class SalonSearchAdapter(
 
         fun bind(salon: Salon) {
             binding.apply {
-                tvSalonName.text = salon.name
-                tvRating.text = salon.rating.toString()
-                tvDistance.text = salon.distance
-                
-                // Show primary service and price
-                val primaryService = salon.services.firstOrNull()
-                tvServicePrice.text = if (primaryService != null) {
-                    "${primaryService.name} • ${primaryService.price}"
+                tvSalonName.text = salon.salonName
+//                tvRating.text = salon.rating.toString()
+                val distanceText = String.format("%.2f km", salon.distance ?: 0.0)
+                tvDistance.text = distanceText
+
+                val salonImage = salon.imagePath.trim()
+                // If backend accidentally concatenated multiple URLs separated by whitespace, take the last token
+                val tokenized = salonImage.split(Regex("\\s+")).lastOrNull()?.trim().orEmpty()
+                val token = SessionManager.getInstance(ivSalonImage.context).getAccessToken()
+
+                // Build absolute URL for relative paths
+                val effectiveUrl = if (!tokenized.startsWith("http", true)) {
+                    Constants.BASE_URL.trim().trimEnd('/') + "/" + tokenized.trimStart('/')
                 } else {
-                    "Services available"
+                    tokenized
                 }
-                
-                // TODO: Load actual image using Glide/Picasso
-                // For now, using placeholder
-                // Glide.with(ivSalonImage.context)
-                //     .load(salon.imageUrl)
-                //     .placeholder(R.drawable.ic_salon_placeholder)
-                //     .into(ivSalonImage)
-                
+
+                // Attach Authorization header for protected http(s) URLs
+                val glideModel: Any = if (effectiveUrl.startsWith("http", true) && token != null) {
+                    GlideUrl(
+                        effectiveUrl,
+                        LazyHeaders.Builder()
+                            .addHeader("Authorization", "Bearer $token")
+                            .build()
+                    )
+                } else {
+                    effectiveUrl
+                }
+
+                Glide.with(ivSalonImage.context)
+                    .load(glideModel)
+                    .placeholder(R.drawable.saloon_image)
+                    .error(R.drawable.saloon_image)
+                    .into(ivSalonImage)
+
                 root.setOnClickListener {
                     onSalonClick(salon)
                 }
@@ -63,7 +86,7 @@ class SalonSearchAdapter(
 
     private class SalonDiffCallback : DiffUtil.ItemCallback<Salon>() {
         override fun areItemsTheSame(oldItem: Salon, newItem: Salon): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.salonId == newItem.salonId
         }
 
         override fun areContentsTheSame(oldItem: Salon, newItem: Salon): Boolean {

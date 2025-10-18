@@ -6,35 +6,31 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import bharatnaai.R
+import com.app.bharatnaai.data.model.Salon
+import com.app.bharatnaai.data.repository.NearbySaloonRepository
 import com.app.bharatnaai.utils.LocationHelper
 import com.app.bharatnaai.utils.LocationWithAddressResult
 import kotlinx.coroutines.launch
+import com.app.bharatnaai.utils.Constants
 
 data class HomeState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val currentLocation: String = "San Francisco",
+    val currentLocation: String = "",
     val isLocationLoading: Boolean = false,
     val hasLocationPermission: Boolean = false
-)
-
-data class FeaturedSalon(
-    val id: String,
-    val name: String,
-    val rating: Float,
-    val reviewCount: Int,
-    val imageUrl: String? = null
 )
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
     
     private val locationHelper = LocationHelper(application)
+    private val nearbyRepo = NearbySaloonRepository()
     
     private val _homeState = MutableLiveData<HomeState>()
     val homeState: LiveData<HomeState> = _homeState
     
-    private val _featuredSalons = MutableLiveData<List<FeaturedSalon>>()
-    val featuredSalons: LiveData<List<FeaturedSalon>> = _featuredSalons
+    private val _featuredSalons = MutableLiveData<List<Salon>>()
+    val featuredSalons: LiveData<List<Salon>> = _featuredSalons
     
     private val _exclusiveOffers = MutableLiveData<List<ExclusiveOffer>>()
     val exclusiveOffers: LiveData<List<ExclusiveOffer>> = _exclusiveOffers
@@ -44,75 +40,31 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     
     init {
         _homeState.value = HomeState()
-        loadFeaturedSalons()
         loadExclusiveOffers()
         loadServices()
-    }
-    
-    private fun loadFeaturedSalons() {
-        // Mock data for featured salons
-        val mockSalons = listOf(
-            FeaturedSalon(
-                id = "1",
-                name = "The Style Lounge",
-                rating = 4.8f,
-                reviewCount = 120
-            ),
-            FeaturedSalon(
-                id = "2",
-                name = "Sharp Cuts",
-                rating = 4.9f,
-                reviewCount = 95
-            ),
-            FeaturedSalon(
-                id = "3",
-                name = "Gentleman's Choice",
-                rating = 4.7f,
-                reviewCount = 203
-            )
-        )
-        
-        _featuredSalons.value = mockSalons
     }
     
     fun updateLocation(location: String) {
         _homeState.value = _homeState.value?.copy(currentLocation = location)
     }
-    
-    fun checkLocationPermission() {
-        val hasPermission = locationHelper.hasLocationPermissions()
-        _homeState.value = _homeState.value?.copy(hasLocationPermission = hasPermission)
-        
-        if (hasPermission) {
-            getCurrentLocation()
-        }
-    }
-    
-    fun getCurrentLocation() {
-        if (!locationHelper.hasLocationPermissions()) {
-            _homeState.value = _homeState.value?.copy(
-                error = "Location permission is required to get your current location"
-            )
-            return
-        }
-        
-        if (!locationHelper.isLocationEnabled()) {
-            _homeState.value = _homeState.value?.copy(
-                error = "Please enable location services to get your current location"
-            )
-            return
-        }
-        
+
+    fun fetchNearbySalonsByLocation() {
+        // Show small spinner for location while we resolve address
         _homeState.value = _homeState.value?.copy(isLocationLoading = true)
-        
+
         viewModelScope.launch {
             when (val result = locationHelper.getCurrentLocationWithAddress()) {
                 is LocationWithAddressResult.Success -> {
+                    val lat = result.location.latitude
+                    val lng = result.location.longitude
+                    // Update readable location in state
                     _homeState.value = _homeState.value?.copy(
                         currentLocation = result.locationName,
                         isLocationLoading = false,
                         error = null
                     )
+                    // Fetch salons for featured section
+                    fetchFeaturedSalons(lat, lng)
                 }
                 is LocationWithAddressResult.Error -> {
                     _homeState.value = _homeState.value?.copy(
@@ -123,10 +75,45 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+    private fun fetchFeaturedSalons(lat: Double, lng: Double) {
+        // Optionally set loading state if needed
+        _homeState.value = _homeState.value?.copy(isLoading = true)
+
+        viewModelScope.launch {
+            try {
+                val response = nearbyRepo.getNearbySaloonDetails(lat, lng)
+                val body = response.body()
+
+                if (response.isSuccessful && body != null) {
+                    val withAbsoluteImages = body.map { s ->
+                        val raw = s.imagePath.trim()
+                        // If the string accidentally contains multiple URLs separated by whitespace, take the last token
+                        val tokenized = raw.split(Regex("\\s+")).lastOrNull()?.trim().orEmpty()
+                        val absolute = if (tokenized.startsWith("http", ignoreCase = true)) tokenized
+                        else Constants.BASE_URL.trim().trimEnd('/') + "/" + tokenized.trimStart('/')
+                        s.copy(imagePath = absolute)
+                    }
+                    _featuredSalons.value = withAbsoluteImages
+                    _homeState.value = _homeState.value?.copy(isLoading = false)
+                } else {
+                    _homeState.value = _homeState.value?.copy(
+                        isLoading = false,
+                        error = "Failed to load featured salons"
+                    )
+                }
+            } catch (e: Exception) {
+                _homeState.value = _homeState.value?.copy(
+                    isLoading = false,
+                    error = e.message ?: "Unknown error loading salons"
+                )
+            }
+        }
+    }
     
     fun onLocationPermissionGranted() {
         _homeState.value = _homeState.value?.copy(hasLocationPermission = true)
-        getCurrentLocation()
+        fetchNearbySalonsByLocation()
     }
     
     fun onLocationPermissionDenied() {

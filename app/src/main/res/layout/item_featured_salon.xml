@@ -15,9 +15,8 @@
         <!-- Salon Image -->
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_salon_image"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:background="@color/accent_color"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

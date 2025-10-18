@@ -10,8 +10,7 @@ import com.app.bharatnaai.data.model.RegisterRequest
 import com.app.bharatnaai.data.model.RegisterResponse
 import com.app.bharatnaai.data.model.ResetPasswordRequest
 import com.app.bharatnaai.data.model.ResetPasswordResponse
-import com.app.bharatnaai.data.model.SaloonDetailsRequest
-import com.app.bharatnaai.data.model.SaloonDetailsResponse
+import com.app.bharatnaai.data.model.Salon
 import com.app.bharatnaai.data.model.TokenRefreshRequest
 import com.app.bharatnaai.data.model.TokenRefreshResponse
 import retrofit2.Response
@@ -19,6 +18,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -47,10 +47,11 @@ interface ApiService {
         @Body request: ResetPasswordRequest
     ): Response<ResetPasswordResponse>
 
-    @GET("barbars/nearby-salons")
+    @GET("barbers/nearby-salons")
     suspend fun getNearbySaloonDetails(
-        @Body salonDetailsRequest: SaloonDetailsRequest
-    ): Response<SaloonDetailsResponse>
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double
+    ): Response<List<Salon>>
 
     @GET("auth/customerdetails")
     suspend fun getCustomerDetails(

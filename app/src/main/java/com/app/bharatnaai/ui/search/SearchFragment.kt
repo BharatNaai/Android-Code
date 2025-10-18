@@ -7,10 +7,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.app.bharatnaai.data.model.FilterType
+import com.app.bharatnaai.data.model.SearchFilter
+import com.app.bharatnaai.data.model.SearchState
+import com.app.bharatnaai.data.model.Salon
 import com.app.bharatnaai.ui.saloon_details.SaloonDetailsFragment
 import bharatnaai.R
 import bharatnaai.databinding.FragmentSearchBinding
@@ -23,6 +31,15 @@ class SearchFragment : Fragment() {
 
     private val viewModel: SearchViewModel by viewModels()
     private lateinit var salonAdapter: SalonSearchAdapter
+    private val locationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { result ->
+        val granted = (result[Manifest.permission.ACCESS_FINE_LOCATION] == true) ||
+                (result[Manifest.permission.ACCESS_COARSE_LOCATION] == true)
+        if (granted) {
+            viewModel.fetchNearbySalonsByLocation()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,13 +56,12 @@ class SearchFragment : Fragment() {
         setupViews()
         setupRecyclerView()
         setupClickListeners()
+        ensureLocationPermission()
         observeData()
     }
 
     private fun setupViews() {
-        // Set initial search text
-        binding.etSearch.setText("Haircut")
-        binding.etSearch.setSelection(binding.etSearch.text?.length ?: 0)
+        binding.etSearch.setText("")
     }
 
     private fun setupRecyclerView() {
@@ -110,6 +126,17 @@ class SearchFragment : Fragment() {
     private fun observeData() {
         viewModel.searchState.observe(viewLifecycleOwner) { state ->
             updateUI(state)
+        }
+    }
+
+    private fun ensureLocationPermission() {
+        val fine = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+        val coarse = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (fine != PackageManager.PERMISSION_GRANTED && coarse != PackageManager.PERMISSION_GRANTED) {
+            locationPermissionLauncher.launch(arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ))
         }
     }
 

@@ -64,7 +64,7 @@
                         android:id="@+id/tv_location_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="San Francisco"
+                        android:text="@string/new_delhi"
                         android:textColor="@color/primary_text_color"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -125,7 +125,7 @@
 
             <!-- Profile Icon -->
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iv_profile"
+                android:id="@+id/iv_app_mode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/profile_circle_background"
@@ -264,13 +264,12 @@
                         app:layout_constraintBottom_toBottomOf="parent" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tv_refresh_hint"
+                        android:id="@+id/tv_view_all"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Pull to refresh"
+                        android:text="@string/view_all"
                         android:textColor="@color/secondary_text_color"
-                        android:textSize="12sp"
-                        android:visibility="gone"
+                        android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent" />

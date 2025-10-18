@@ -52,4 +52,7 @@
     <string name="featured_salons_and_barbers"><![CDATA[Featured Salons & Barbers]]></string>
     <string name="filterbutton">filterButton</string>
     <string name="app_theme_mode">app_theme_mode</string>
+    <string name="new_delhi">New Delhi</string>
+    <string name="view_all">View all</string>
+    <string name="book_now">Book Now</string>
 </resources>

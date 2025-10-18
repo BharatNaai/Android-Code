@@ -1,16 +1,30 @@
-package com.app.bharatnaai.ui.search
+package com.app.bharatnaai.data.model
+
+data class SaloonDetailsResponse(
+    val nearbySalons: List<Salon>,
+    val message: String,
+    val success: Boolean
+)
 
 data class Salon(
-    val id: String,
-    val name: String,
-    val imageUrl: String? = null,
-    val services: List<SalonService>,
-    val rating: Float,
-    val reviewCount: Int,
-    val distance: String,
-    val address: String,
-    val isOpen: Boolean = true,
-    val openingHours: String? = null
+    val salonId: Int,
+    val salonName: String,
+    val address: String?, // nullable
+    val imagePath: String,
+    val latitude: Double,
+    val longitude: Double,
+    val barbers: List<Barber>,
+    val rating: Double? = null,
+    val distance: Double? = null, // in km if provided by backend
+    val priceLevel: Int? = null, // 1..n if provided
+    val services: List<String>? = null // names of services if provided
+)
+
+data class Barber(
+    val barberId: Int,
+    val barberName: String,
+    val phone: String,
+    val email: String
 )
 
 data class SalonService(
@@ -34,12 +48,16 @@ enum class FilterType(val displayName: String) {
 }
 
 data class SearchState(
-    val isLoading: Boolean = false,
-    val searchQuery: String = "",
+    val allSalons: List<Salon> = emptyList(),
     val salons: List<Salon> = emptyList(),
-    val filters: List<SearchFilter> = FilterType.values().map { 
-        SearchFilter(it, it == FilterType.RATING) // Rating selected by default as shown in UI
-    },
-    val error: String? = null,
-    val selectedService: String? = null
+    val searchQuery: String = "",
+    val filters: List<SearchFilter> = listOf(
+        SearchFilter(FilterType.DISTANCE),
+        SearchFilter(FilterType.RATING),
+        SearchFilter(FilterType.PRICE),
+        SearchFilter(FilterType.SERVICE)
+    ),
+    val isLoading: Boolean = false,
+    val error: String? = null
 )
+

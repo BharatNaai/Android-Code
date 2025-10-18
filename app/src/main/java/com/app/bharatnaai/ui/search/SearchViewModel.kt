@@ -5,38 +5,51 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.app.bharatnaai.data.model.SaloonDetailsRequest
+import com.app.bharatnaai.data.model.FilterType
+import com.app.bharatnaai.data.model.SearchState
+import com.app.bharatnaai.data.model.Salon
 import com.app.bharatnaai.data.repository.NearbySaloonRepository
-import com.app.bharatnaai.data.session.SessionManager
 import com.app.bharatnaai.utils.LocationHelper
+import com.app.bharatnaai.utils.LocationResult
 import kotlinx.coroutines.launch
+import com.app.bharatnaai.utils.Constants
 
+/**
+ * SearchViewModel
+ * -----------------
+ * Handles:
+ * 1. Fetching nearby salons via location (API)
+ * 2. Managing search query and filters
+ * 3. Combining both to show filtered salon list
+ */
 class SearchViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _searchState = MutableLiveData<SearchState>()
     val searchState: LiveData<SearchState> = _searchState
 
     private val repository = NearbySaloonRepository()
-    private val sessionManager = SessionManager.getInstance(application.applicationContext)
     private val locationHelper = LocationHelper(application.applicationContext)
 
     init {
-        _searchState.value = SearchState(searchQuery = "Haircut")
-        fetchNearbySalonsWithSessionAndLocation()
+        _searchState.value = SearchState()
+        fetchNearbySalonsByLocation()
     }
 
     fun updateSearchQuery(query: String) {
-        _searchState.value = _searchState.value?.copy(searchQuery = query)
-        searchSalons(query)
+        val currentState = _searchState.value ?: return
+        _searchState.value = currentState.copy(searchQuery = query)
+        refreshFilteredList()
     }
 
     fun clearSearch() {
-        _searchState.value = _searchState.value?.copy(searchQuery = "")
-        fetchNearbySalonsWithSessionAndLocation()
+        val currentState = _searchState.value ?: return
+        _searchState.value = currentState.copy(searchQuery = "")
+        refreshFilteredList()
     }
 
     fun toggleFilter(filterType: FilterType) {
         val currentState = _searchState.value ?: return
+
         val updatedFilters = currentState.filters.map { filter ->
             if (filter.type == filterType) {
                 filter.copy(isSelected = !filter.isSelected)
@@ -44,53 +57,24 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
                 filter
             }
         }
+
         _searchState.value = currentState.copy(filters = updatedFilters)
-        applyFilters()
+        refreshFilteredList()
     }
 
-    private fun searchSalons(query: String) {
-        val currentState = _searchState.value ?: return
-        val allSalons = currentState.salons
-        if (query.isBlank()) {
-            fetchNearbySalonsWithSessionAndLocation()
-            return
-        }
-        val filteredSalons = allSalons.filter { salon ->
-            salon.name.contains(query, ignoreCase = true) ||
-            salon.services.any { service ->
-                service.name.contains(query, ignoreCase = true)
-            }
-        }
-        _searchState.value = currentState.copy(salons = filteredSalons)
-    }
 
-    private fun applyFilters() {
-        val currentState = _searchState.value ?: return
-        var filteredSalons = currentState.salons
-        if (currentState.filters.find { it.type == FilterType.RATING }?.isSelected == true) {
-            filteredSalons = filteredSalons.filter { it.rating >= 4.5f }
-        }
-        _searchState.value = currentState.copy(salons = filteredSalons)
-    }
 
-    private fun fetchNearbySalonsWithSessionAndLocation() {
+    fun fetchNearbySalonsByLocation() {
         _searchState.value = _searchState.value?.copy(isLoading = true)
+
         viewModelScope.launch {
-            val authToken = sessionManager.getAccessToken()
-            if (authToken.isNullOrBlank()) {
-                _searchState.value = _searchState.value?.copy(
-                    isLoading = false,
-                    error = "User not authenticated. Please log in."
-                )
-                return@launch
-            }
             when (val locationResult = locationHelper.getCurrentLocation()) {
-                is com.app.bharatnaai.utils.LocationResult.Success -> {
-                    val lat = locationResult.location.latitude.toString()
-                    val lng = locationResult.location.longitude.toString()
-                    fetchNearbySalons(authToken, lat, lng)
+                is LocationResult.Success -> {
+                    val lat = locationResult.location.latitude
+                    val lng = locationResult.location.longitude
+                    fetchNearbySalons(lat, lng)
                 }
-                is com.app.bharatnaai.utils.LocationResult.Error -> {
+                is LocationResult.Error -> {
                     _searchState.value = _searchState.value?.copy(
                         isLoading = false,
                         error = locationResult.message
@@ -100,46 +84,91 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun fetchNearbySalons(authToken: String, lat: String, lng: String) {
+    fun fetchNearbySalons(lat: Double, lng: Double) {
         _searchState.value = _searchState.value?.copy(isLoading = true)
+
         viewModelScope.launch {
             try {
-                val request = SaloonDetailsRequest(authToken, lat, lng)
-                val response = repository.getNearbySaloonDetails(request)
-                if (response.isSuccessful && response.body()?.success == true) {
-                    val salons = response.body()?.nearbySalons?.map { mapApiSalonToUi(it) } ?: emptyList()
+                val response = repository.getNearbySaloonDetails(lat, lng)
+                val body = response.body()
+
+                if (response.isSuccessful && body != null) {
+                    val salons: List<Salon> = body.map { s ->
+                        val absolute = if (s.imagePath.startsWith("http", ignoreCase = true)) s.imagePath
+                        else Constants.BASE_URL.trim().trimEnd('/') + "/" + s.imagePath.trimStart('/')
+                        s.copy(imagePath = absolute)
+                    }
                     _searchState.value = _searchState.value?.copy(
-                        salons = salons,
+                        allSalons = salons,
+                        salons = salons, // initially unfiltered
                         isLoading = false,
                         error = null
                     )
                 } else {
                     _searchState.value = _searchState.value?.copy(
                         isLoading = false,
-                        error = response.body()?.message ?: "Failed to load salons"
+                        error = "Failed to load salons"
                     )
                 }
             } catch (e: Exception) {
                 _searchState.value = _searchState.value?.copy(
                     isLoading = false,
-                    error = e.message ?: "Unknown error"
+                    error = e.message ?: "Unknown error occurred"
                 )
             }
         }
     }
 
-    private fun mapApiSalonToUi(apiSalon: com.app.bharatnaai.data.model.Salon): Salon {
-        return Salon(
-            id = apiSalon.salonId.toString(),
-            name = apiSalon.salonName,
-            imageUrl = apiSalon.imagePath, // You may want to prepend base URL
-            services = emptyList(), // Map barbers/services if needed
-            rating = 0f, // If you have rating in API, use it
-            reviewCount = 0, // If you have review count in API, use it
-            distance = "", // Calculate or get from API if available
-            address = apiSalon.address ?: "",
-            isOpen = true // Or use API data if available
-        )
+    private fun refreshFilteredList() {
+        val currentState = _searchState.value ?: return
+        var filteredSalons = currentState.allSalons
+
+        // Get all active filters
+        val activeFilters = currentState.filters.filter { it.isSelected }
+
+        // Apply filters
+        activeFilters.forEach { filter ->
+            when (filter.type) {
+                FilterType.RATING -> {
+                    // Keep salons rated 4.0 or above (nullable-safe)
+                    filteredSalons = filteredSalons.filter { (it.rating ?: 0.0) >= 4.0 }
+                }
+
+                FilterType.DISTANCE -> {
+                    // Example: only show salons within 5 km (nullable-safe)
+                    filteredSalons = filteredSalons.filter { (it.distance ?: Double.MAX_VALUE) <= 5.0 }
+                }
+
+                FilterType.PRICE -> {
+                    // Example: show affordable salons (priceLevel <= 2) (nullable-safe)
+                    filteredSalons = filteredSalons.filter { (it.priceLevel ?: Int.MAX_VALUE) <= 2 }
+                }
+
+                FilterType.SERVICE -> {
+                    // Example: filter by a service name in current search query
+                    val q = currentState.searchQuery
+                    if (q.isNotBlank()) {
+                        filteredSalons = filteredSalons.filter { salon ->
+                            salon.services?.any { service ->
+                                service.contains(q, ignoreCase = true)
+                            } == true
+                        }
+                    }
+                }
+            }
+        }
+
+        // Apply search query after filtering
+        val query = currentState.searchQuery
+        if (query.isNotBlank()) {
+            filteredSalons = filteredSalons.filter {
+                it.salonName.contains(query, ignoreCase = true) ||
+                        (it.address?.contains(query, ignoreCase = true) == true)
+            }
+        }
+
+        // Update state
+        _searchState.value = currentState.copy(salons = filteredSalons)
     }
 
     fun clearError() {

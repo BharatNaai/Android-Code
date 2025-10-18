@@ -1,6 +1,8 @@
 package com.app.bharatnaai.ui.home
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -10,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,21 +27,19 @@ class HomeFragment : Fragment() {
     
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    
     private val viewModel: HomeViewModel by viewModels()
     
     // Location permission launcher
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val allGranted = permissions.values.all { it }
-        if (allGranted) {
-            viewModel.onLocationPermissionGranted()
-        } else {
-            viewModel.onLocationPermissionDenied()
-            handlePermissionDenied()
+    ) { result ->
+        val granted = (result[Manifest.permission.ACCESS_FINE_LOCATION] == true) ||
+                (result[Manifest.permission.ACCESS_COARSE_LOCATION] == true)
+        if (granted) {
+            viewModel.fetchNearbySalonsByLocation()
         }
     }
+
     private lateinit var featuredSalonsAdapter: FeaturedSalonsAdapter
     private lateinit var exclusiveOffersAdapter: ExclusiveOffersAdapter
     
@@ -56,11 +57,9 @@ class HomeFragment : Fragment() {
         
         setupViews()
         setupRecyclerView()
-        observeData()
         setupClickListeners()
-        
-        // Check location permission on fragment creation
-        viewModel.checkLocationPermission()
+        ensureLocationPermission()
+        observeData()
     }
     
     private fun setupViews() {
@@ -70,7 +69,7 @@ class HomeFragment : Fragment() {
     private fun setupRecyclerView() {
         // Featured Salons Adapter
         featuredSalonsAdapter = FeaturedSalonsAdapter { salon ->
-            Toast.makeText(context, "Selected: ${salon.name}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Selected: ${salon.salonName}", Toast.LENGTH_SHORT).show()
         }
         
         binding.rvFeaturedSalons.apply {
@@ -104,25 +103,16 @@ class HomeFragment : Fragment() {
     }
     
     private fun updateUI(state: HomeState) {
-        // Update location
-        binding.tvLocationName.text = if (state.isLocationLoading) {
-            "Getting location..."
-        } else {
-            state.currentLocation
-        }
-        
         // Handle loading states, errors, etc.
         if (state.error != null) {
             Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
             viewModel.clearError()
         }
     }
+
+
     
     private fun setupClickListeners() {
-        // Location click - request location permission and get current location
-        binding.llLocationSection.setOnClickListener {
-            requestLocationPermission()
-        }
 
         // Notification click - navigate to notifications screen
         binding.notificationContainer.setOnClickListener {
@@ -135,15 +125,11 @@ class HomeFragment : Fragment() {
 
         // Search functionality
         binding.searchBar.setOnClickListener{
-            val searchfrag = SearchFragment()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, searchfrag)
-                .addToBackStack(null)
-                .commit()
+            navigateToSearchFrag()
+        }
 
-            // ✅ Update BottomNavigationView to highlight the Search tab
-            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation)
-            bottomNav.selectedItemId = R.id.nav_search
+        binding.tvViewAll.setOnClickListener {
+            navigateToSearchFrag()
         }
 
         // Note: Exclusive offers now handled by RecyclerView adapter
@@ -170,12 +156,25 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    private fun ensureLocationPermission() {
+        val fine = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+        val coarse = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (fine != PackageManager.PERMISSION_GRANTED && coarse != PackageManager.PERMISSION_GRANTED) {
+            locationPermissionLauncher.launch(arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ))
+        } else {
+            viewModel.fetchNearbySalonsByLocation()
+        }
+    }
     
     private fun requestLocationPermission() {
         when {
             viewModel.homeState.value?.hasLocationPermission == true -> {
                 // Permission already granted, get location
-                viewModel.getCurrentLocation()
+                viewModel.fetchNearbySalonsByLocation()
             }
             shouldShowRequestPermissionRationale(LocationHelper.REQUIRED_PERMISSIONS[0]) -> {
                 // Show rationale dialog
@@ -235,5 +234,17 @@ class HomeFragment : Fragment() {
     
     companion object {
         fun newInstance() = HomeFragment()
+    }
+
+    fun  navigateToSearchFrag(){
+        val searchfrag = SearchFragment()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, searchfrag)
+            .addToBackStack(null)
+            .commit()
+
+        // ✅ Update BottomNavigationView to highlight the Search tab
+        val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        bottomNav.selectedItemId = R.id.nav_search
     }
 }

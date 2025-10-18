@@ -44,11 +44,3 @@ data class ResetPasswordRequest(
     val password: String
 )
 
-data class SaloonDetailsRequest(
-    @SerializedName("authorization")
-    val authToken :String,
-    @SerializedName("lat")
-    val lat: String,
-    @SerializedName("lng")
-    val lng: String
-)

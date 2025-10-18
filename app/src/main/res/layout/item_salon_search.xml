@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dp"
     android:background="@drawable/card_background"
-    android:padding="16dp"
+    android:padding="12dp"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground">
@@ -15,112 +15,118 @@
     <!-- Salon Image -->
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_salon_image"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:background="@drawable/card_background"
+        android:layout_width="0dp"
+        android:layout_height="140dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_salon_placeholder"
+        android:background="@drawable/card_background"
+        android:src="@drawable/saloon_image"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Salon Name -->
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_salon_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
-        android:text="The Barber Shop"
-        android:textColor="@color/primary_text_color"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:fontFamily="sans-serif-medium"
-        android:maxLines="1"
-        android:ellipsize="end"
-        app:layout_constraintStart_toEndOf="@id/iv_salon_image"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/iv_salon_image"
-        tools:text="The Barber Shop" />
+        app:layout_constraintBottom_toTopOf="@id/text_container"
+        />
 
-    <!-- Service and Price -->
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_service_price"
+    <!-- Container for text fields and button -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/text_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="8dp"
-        android:text="Haircut • $25"
-        android:textColor="#999999"
-        android:textSize="14sp"
-        android:fontFamily="sans-serif"
-        android:maxLines="1"
-        android:ellipsize="end"
-        app:layout_constraintStart_toEndOf="@id/iv_salon_image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_salon_name"
-        tools:text="Haircut • $25" />
-
-    <!-- Rating and Distance Container -->
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/rating_distance_container"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        app:layout_constraintStart_toEndOf="@id/iv_salon_image"
+        app:layout_constraintTop_toBottomOf="@id/iv_salon_image"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_service_price"
-        app:layout_constraintBottom_toBottomOf="@id/iv_salon_image">
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- Star Icon -->
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iv_star"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:src="@drawable/ic_star_filled"
-            app:tint="#D4AF37" />
-
-        <!-- Rating -->
+        <!-- Salon Name -->
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_rating"
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_salon_name"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:text="4.8"
+            android:text="The Barber Shop"
             android:textColor="@color/primary_text_color"
-            android:textSize="14sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium"
-            tools:text="4.8" />
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_book_now"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            tools:text="The Barber Shop" />
 
-        <!-- Distance -->
+        <!-- Service and Price -->
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_distance"
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_service_price"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="1.2 mi"
+            android:layout_marginTop="4dp"
+            android:text="Haircut • $25"
             android:textColor="#999999"
             android:textSize="14sp"
             android:fontFamily="sans-serif"
-            tools:text="1.2 mi" />
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_book_now"
+            app:layout_constraintTop_toBottomOf="@id/tv_salon_name"
+            tools:text="Haircut • $25" />
 
-    </androidx.appcompat.widget.LinearLayoutCompat>
+        <!-- Rating and Distance Container -->
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/rating_distance_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_book_now"
+            app:layout_constraintTop_toBottomOf="@id/tv_service_price">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_book_now"
-        style="@style/Widget.MaterialComponents.Button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Book Now"
-        android:background="@drawable/button_primary_background"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_salon_image" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_star_filled"
+                app:tint="#D4AF37" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="4.2"
+                android:textColor="@color/primary_text_color"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="4.8" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="1.2 km"
+                android:textColor="#999999"
+                android:textSize="14sp"
+                tools:text="1.2 km" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <!-- Book Now Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_book_now"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/book_now"
+            android:textSize="14sp"
+            android:textAllCaps="false"
+            android:background="@drawable/button_primary_background"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

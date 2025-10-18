@@ -52,29 +52,6 @@ data class ResetPasswordResponse(
     val message: String
 )
 
-data class SaloonDetailsResponse(
-    val nearbySalons: List<Salon>,
-    val message: String,
-    val success: Boolean
-)
-
-data class Salon(
-    val salonId: Int,
-    val salonName: String,
-    val address: String?, // nullable
-    val imagePath: String,
-    val latitude: Double,
-    val longitude: Double,
-    val barbers: List<Barber>
-)
-
-data class Barber(
-    val barberId: Int,
-    val barberName: String,
-    val phone: String,
-    val email: String
-)
-
 data class CustomerDetails(
     val email: String,
     val fullName: String,
