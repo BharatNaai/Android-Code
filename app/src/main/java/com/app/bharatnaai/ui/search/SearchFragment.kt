@@ -147,9 +147,6 @@ class SearchFragment : Fragment() {
         // Update filter chips appearance
         updateFilterChips(state.filters)
 
-        // Handle loading state
-        // You can add a progress indicator here if needed
-
         // Handle errors
         if (state.error != null) {
             Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
@@ -159,6 +156,9 @@ class SearchFragment : Fragment() {
 
     private fun navigateToSalonDetails(salon: Salon) {
         val fragment = SaloonDetailsFragment()
+        fragment.arguments = Bundle().apply {
+            putInt("salonId", salon.salonId)
+        }
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment) // Assuming you have a container with this ID
             .addToBackStack(null)

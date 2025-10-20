@@ -58,3 +58,20 @@ data class CustomerDetails(
     val phone: String
 )
 
+data class BarberSlotsAvailableResponse(
+    val totalSlots: Int,
+    val slots: List<Slot>,
+    val success: Boolean
+)
+
+data class Slot(
+    val id: Int,
+    val barberId: Int,
+    val salonId: Int,
+    val serviceType: String,
+    val slotDate: String,
+    val startTime: String,
+    val endTime: String,
+    val status: String
+)
+

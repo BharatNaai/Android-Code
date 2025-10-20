@@ -25,7 +25,7 @@
     <string name="back_arrow_button">back arrow button</string>
     <string name="home">Home</string>
     <string name="search">Search</string>
-    <string name="bookings">Bookings</string>
+    <string name="bookings">My Bookings</string>
     <string name="profile">Profile</string>
     <string name="register_yourself">Register Yourself</string>
     <string name="full_name">Full Name</string>
@@ -55,4 +55,17 @@
     <string name="new_delhi">New Delhi</string>
     <string name="view_all">View all</string>
     <string name="book_now">Book Now</string>
+
+    <string name="barber_image_description">Barber profile image</string>
+    <string name="rating_star_description">Rating star icon</string>
+    <string name="barber1_name">Liam Harper</string>
+    <string name="barber1_role">Haircut Specialist</string>
+    <string name="barber1_rating">4.9 (120 reviews)</string>
+    <string name="service1_name">Classic Haircut</string>
+    <string name="service1_price">$40</string>
+    <string name="service2_name">Beard Trim</string>
+    <string name="service2_price">$25</string>
+    <string name="the_barber_shop">The Barber Shop</string>
+    <string name="haircut_25">Haircut • $25</string>
+    <string name="book_available_slots">Book Available Slots</string>
 </resources>

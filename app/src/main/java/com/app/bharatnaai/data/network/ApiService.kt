@@ -1,6 +1,7 @@
 package com.app.bharatnaai.data.network
 
 import com.app.bharatnaai.data.model.ApiResponse
+import com.app.bharatnaai.data.model.BarberSlotsAvailableResponse
 import com.app.bharatnaai.data.model.CustomerDetails
 import com.app.bharatnaai.data.model.ForgetPasswordRequest
 import com.app.bharatnaai.data.model.ForgetPasswordResponse
@@ -18,6 +19,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -57,4 +59,15 @@ interface ApiService {
     suspend fun getCustomerDetails(
         @Header("Authorization") accessToken : String
     ) :Response<CustomerDetails>
+
+    @GET("barbers/salon/{salonId}")
+    suspend fun getSalonDetails(
+        @Path("salonId") salonId: Int
+    ): Response<Salon>
+
+    @GET("barbers/slots")
+    suspend fun getAvailableSlots(
+        @Query("barberId") barberId: Int,
+        @Query("date") date: String
+    ): Response<BarberSlotsAvailableResponse>
 }

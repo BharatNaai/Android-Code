@@ -73,7 +73,7 @@ class SalonSearchAdapter(
                     .error(R.drawable.saloon_image)
                     .into(ivSalonImage)
 
-                root.setOnClickListener {
+                btnBookNow.setOnClickListener {
                     onSalonClick(salon)
                 }
 
