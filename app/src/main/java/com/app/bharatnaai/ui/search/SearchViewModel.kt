@@ -27,7 +27,7 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     private val _searchState = MutableLiveData<SearchState>()
     val searchState: LiveData<SearchState> = _searchState
 
-    private val repository = NearbySaloonRepository()
+    private val repository = NearbySaloonRepository(getApplication())
     private val locationHelper = LocationHelper(application.applicationContext)
 
     init {

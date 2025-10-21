@@ -24,7 +24,7 @@ data class HomeState(
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
     
     private val locationHelper = LocationHelper(application)
-    private val nearbyRepo = NearbySaloonRepository()
+    private val nearbyRepo = NearbySaloonRepository(getApplication())
     
     private val _homeState = MutableLiveData<HomeState>()
     val homeState: LiveData<HomeState> = _homeState

@@ -68,6 +68,34 @@ class BarberDetailsFragment : Fragment() {
         }
 
         binding.btnBook.setOnClickListener {
+            val idx = viewModel.state.value?.selectedTimeIndex ?: -1
+            val slots = viewModel.state.value?.timeSlots.orEmpty()
+            if (idx < 0 || idx >= slots.size) {
+                Toast.makeText(requireContext(), "Please select a time slot", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val slot = slots[idx]
+
+            // Format date: 20 October 2025
+            val dateLabel = try {
+                val input = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).parse(slot.slotDate)
+                java.text.SimpleDateFormat("d MMMM yyyy", java.util.Locale.US).format(input!!)
+            } catch (e: Exception) { slot.slotDate }
+
+            // Format time: 09:40 AM
+            val timeLabel = try {
+                val tin = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.US).parse(slot.startTime)
+                java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US).format(tin!!)
+            } catch (e: Exception) { slot.startTime }
+
+            val confirmNo = "#BK" + (100000 + kotlin.random.Random.Default.nextInt(900000)).toString()
+
+            val dialog = com.app.bharatnaai.ui.custom_dialog.BookingConfirmDialogFragment.newInstance(
+                confirmNo = confirmNo,
+                date = dateLabel,
+                time = timeLabel
+            )
+            dialog.show(parentFragmentManager, "booking_confirm_dialog")
         }
     }
 

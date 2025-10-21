@@ -42,7 +42,7 @@ class BarberDetailsViewModel(app: Application) : AndroidViewModel(app) {
     private val _barbers = MutableLiveData<List<Barber>>()
     val barbers: LiveData<List<Barber>> = _barbers
 
-    private val slotsRepo = BarberSlotsRepository(ApiClient.apiService)
+    private val slotsRepo = BarberSlotsRepository(getApplication(), ApiClient.apiService)
 
     init {
         _barbers.value?.firstOrNull()?.let { setSelectedBarber(it) }

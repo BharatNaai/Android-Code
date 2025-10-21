@@ -12,6 +12,7 @@ import com.app.bharatnaai.utils.PreferenceManager
 import bharatnaai.R
 import bharatnaai.databinding.ActivityMainBinding
 import com.app.bharatnaai.data.repository.ApiResult
+import com.app.bharatnaai.ui.my_booking.BookingHistoryFrag
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,8 +45,8 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_bookings -> {
-                    Toast.makeText(this, "Bookings - Coming soon!", Toast.LENGTH_SHORT).show()
-                    false // Don't select until fragment is created
+                    loadFragment(BookingHistoryFrag.newInstance())
+                    true
                 }
                 R.id.nav_profile -> {
                     loadFragment(UserProfileFragment.newInstance())

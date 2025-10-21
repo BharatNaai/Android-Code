@@ -36,7 +36,7 @@ class SaloonDetailsViewModel(application: Application) : AndroidViewModel(applic
     private val _barbers = MutableLiveData<List<Barber>>()
     val barbers: LiveData<List<Barber>> = _barbers
 
-    private val repo = SaloonDetailsRepo(ApiClient.apiService)
+    private val repo = SaloonDetailsRepo(getApplication(), ApiClient.apiService)
 
     init {
         loadServices()
