@@ -24,11 +24,11 @@ import com.app.bharatnaai.utils.LocationHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class HomeFragment : Fragment() {
-    
+
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val viewModel: HomeViewModel by viewModels()
-    
+
     // Location permission launcher
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -42,7 +42,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var featuredSalonsAdapter: FeaturedSalonsAdapter
     private lateinit var exclusiveOffersAdapter: ExclusiveOffersAdapter
-    
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,57 +51,57 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
-    
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         setupViews()
         setupRecyclerView()
         setupClickListeners()
         ensureLocationPermission()
         observeData()
     }
-    
+
     private fun setupViews() {
         // Setup any initial view configurations
     }
-    
+
     private fun setupRecyclerView() {
         // Featured Salons Adapter
         featuredSalonsAdapter = FeaturedSalonsAdapter { salon ->
             Toast.makeText(context, "Selected: ${salon.salonName}", Toast.LENGTH_SHORT).show()
         }
-        
+
         binding.rvFeaturedSalons.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = featuredSalonsAdapter
         }
-        
+
         // Exclusive Offers Adapter
         exclusiveOffersAdapter = ExclusiveOffersAdapter { offer ->
             Toast.makeText(context, "Selected offer: ${offer.title}", Toast.LENGTH_SHORT).show()
         }
-        
+
         binding.rvExclusiveOffers.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = exclusiveOffersAdapter
         }
     }
-    
+
     private fun observeData() {
         viewModel.homeState.observe(viewLifecycleOwner) { state ->
             updateUI(state)
         }
-        
+
         viewModel.featuredSalons.observe(viewLifecycleOwner) { salons ->
             featuredSalonsAdapter.submitList(salons)
         }
-        
+
         viewModel.exclusiveOffers.observe(viewLifecycleOwner) { offers ->
             exclusiveOffersAdapter.submitList(offers)
         }
     }
-    
+
     private fun updateUI(state: HomeState) {
         // Handle loading states, errors, etc.
         if (state.error != null) {
@@ -111,7 +111,6 @@ class HomeFragment : Fragment() {
     }
 
 
-    
     private fun setupClickListeners() {
 
         // Notification click - navigate to notifications screen
@@ -124,7 +123,7 @@ class HomeFragment : Fragment() {
         }
 
         // Search functionality
-        binding.searchBar.setOnClickListener{
+        binding.searchBar.setOnClickListener {
             navigateToSearchFrag()
         }
 
@@ -133,60 +132,70 @@ class HomeFragment : Fragment() {
         }
 
         // Note: Exclusive offers now handled by RecyclerView adapter
-        
+
         // Service clicks
         binding.serviceHaircut.setOnClickListener {
             Toast.makeText(context, "Haircut services - Coming soon!", Toast.LENGTH_SHORT).show()
         }
-        
+
         binding.serviceShaving.setOnClickListener {
             Toast.makeText(context, "Shaving services - Coming soon!", Toast.LENGTH_SHORT).show()
         }
-        
+
         binding.serviceGrooming.setOnClickListener {
             Toast.makeText(context, "Grooming services - Coming soon!", Toast.LENGTH_SHORT).show()
         }
-        
+
         binding.servicePackages.setOnClickListener {
             Toast.makeText(context, "Package deals - Coming soon!", Toast.LENGTH_SHORT).show()
         }
     }
-    
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
     private fun ensureLocationPermission() {
-        val fine = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-        val coarse = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+        val fine = ActivityCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        val coarse = ActivityCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
         if (fine != PackageManager.PERMISSION_GRANTED && coarse != PackageManager.PERMISSION_GRANTED) {
-            locationPermissionLauncher.launch(arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ))
+            locationPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
         } else {
             viewModel.fetchNearbySalonsByLocation()
         }
     }
-    
+
     private fun requestLocationPermission() {
         when {
             viewModel.homeState.value?.hasLocationPermission == true -> {
                 // Permission already granted, get location
                 viewModel.fetchNearbySalonsByLocation()
             }
+
             shouldShowRequestPermissionRationale(LocationHelper.REQUIRED_PERMISSIONS[0]) -> {
                 // Show rationale dialog
                 showPermissionRationaleDialog()
             }
+
             else -> {
                 // Request permission directly
                 locationPermissionLauncher.launch(LocationHelper.REQUIRED_PERMISSIONS)
             }
         }
     }
-    
+
     private fun showPermissionRationaleDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle("Location Permission Required")
@@ -196,22 +205,26 @@ class HomeFragment : Fragment() {
             }
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
-                Toast.makeText(context, "Location permission is required to get your current location", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "Location permission is required to get your current location",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             .show()
     }
-    
+
     private fun handlePermissionDenied() {
         val shouldShowRationale = LocationHelper.REQUIRED_PERMISSIONS.any { permission ->
             shouldShowRequestPermissionRationale(permission)
         }
-        
+
         if (!shouldShowRationale) {
             // Permission permanently denied, show settings dialog
             showSettingsDialog()
         }
     }
-    
+
     private fun showSettingsDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle("Permission Required")
@@ -224,19 +237,19 @@ class HomeFragment : Fragment() {
             }
             .show()
     }
-    
+
     private fun openAppSettings() {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.fromParts("package", requireContext().packageName, null)
         }
         startActivity(intent)
     }
-    
+
     companion object {
         fun newInstance() = HomeFragment()
     }
 
-    fun  navigateToSearchFrag(){
+    fun navigateToSearchFrag() {
         val searchfrag = SearchFragment()
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, searchfrag)

@@ -9,6 +9,7 @@ import bharatnaai.databinding.ItemTimeSlotBinding
 import com.app.bharatnaai.data.model.Slot
 import java.text.SimpleDateFormat
 import java.util.Locale
+import androidx.core.content.ContextCompat
 
 class TimeSlotsAdapter(
     private val onSelect: (Int) -> Unit
@@ -16,8 +17,11 @@ class TimeSlotsAdapter(
 
     var selectedIndex: Int = -1
         set(value) {
+            if (field == value) return
+            val previous = field
             field = value
-            notifyDataSetChanged()
+            if (previous >= 0 && previous < itemCount) notifyItemChanged(previous)
+            if (value >= 0 && value < itemCount) notifyItemChanged(value)
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SlotVH {
@@ -39,10 +43,23 @@ class TimeSlotsAdapter(
             binding.tvTime.alpha = if (available) 1.0f else 0.5f
 
             // Selected styling via isSelected state list in background
-            binding.tvTime.isSelected = index == selectedIndex
+            val isSelected = index == selectedIndex
+            binding.tvTime.isSelected = isSelected
+            val bg = if (isSelected) {
+                ContextCompat.getDrawable(binding.root.context, bharatnaai.R.drawable.filter_chip_selected_background)
+            } else {
+                ContextCompat.getDrawable(binding.root.context, bharatnaai.R.drawable.card_background)
+            }
+            binding.root.background = bg
 
             binding.root.setOnClickListener {
-                if (available) onSelect(index)
+                if (!available) return@setOnClickListener
+
+                // Radio-like single selection: update only if changed
+                if (index != selectedIndex) {
+                    selectedIndex = index
+                }
+                onSelect(index)
             }
         }
 
@@ -61,4 +78,5 @@ class TimeSlotsAdapter(
         override fun areContentsTheSame(oldItem: Slot, newItem: Slot): Boolean = oldItem == newItem
     }
 }
+
 

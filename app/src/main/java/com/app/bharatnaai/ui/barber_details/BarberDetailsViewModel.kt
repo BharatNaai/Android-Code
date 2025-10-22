@@ -26,7 +26,7 @@ data class BarberDetailsState(
     val monthTitle: String = "October 2024",
     val selectedDateMs: Long? = null,
     val timeSlots: List<Slot> = emptyList(),
-    val selectedTimeIndex: Int = 1,
+    val selectedTimeIndex: Int = -1,
     val services: List<ServiceChip> = emptyList(),
     val promoCode: String? = null,
     val totalCents: Int = 4500

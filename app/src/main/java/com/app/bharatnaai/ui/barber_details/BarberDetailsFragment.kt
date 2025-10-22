@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.core.content.ContextCompat
 import bharatnaai.databinding.FragmentBarberDetailsBinding
 import android.app.DatePickerDialog
+import com.app.bharatnaai.ui.custom_dialog.BookingConfirmDialogFragment
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -23,7 +24,7 @@ class BarberDetailsFragment : Fragment() {
     private val viewModel: BarberDetailsViewModel by viewModels()
 
     private lateinit var timeSlotsAdapter: TimeSlotsAdapter
-    private val selectedServices = mutableSetOf<String>()
+    private var selectedService: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,26 +72,32 @@ class BarberDetailsFragment : Fragment() {
             val idx = viewModel.state.value?.selectedTimeIndex ?: -1
             val slots = viewModel.state.value?.timeSlots.orEmpty()
             if (idx < 0 || idx >= slots.size) {
-                Toast.makeText(requireContext(), "Please select a time slot", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Please select a time slot", Toast.LENGTH_SHORT)
+                    .show()
                 return@setOnClickListener
             }
             val slot = slots[idx]
 
             // Format date: 20 October 2025
             val dateLabel = try {
-                val input = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).parse(slot.slotDate)
-                java.text.SimpleDateFormat("d MMMM yyyy", java.util.Locale.US).format(input!!)
-            } catch (e: Exception) { slot.slotDate }
+                val input = SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(slot.slotDate)
+                SimpleDateFormat("d MMMM yyyy", Locale.US).format(input!!)
+            } catch (e: Exception) {
+                slot.slotDate
+            }
 
             // Format time: 09:40 AM
             val timeLabel = try {
-                val tin = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.US).parse(slot.startTime)
-                java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US).format(tin!!)
-            } catch (e: Exception) { slot.startTime }
+                val tin = SimpleDateFormat("HH:mm:ss", Locale.US).parse(slot.startTime)
+                SimpleDateFormat("hh:mm a", Locale.US).format(tin!!)
+            } catch (e: Exception) {
+                slot.startTime
+            }
 
-            val confirmNo = "#BK" + (100000 + kotlin.random.Random.Default.nextInt(900000)).toString()
+            val confirmNo =
+                "#BK" + (100000 + kotlin.random.Random.Default.nextInt(900000)).toString()
 
-            val dialog = com.app.bharatnaai.ui.custom_dialog.BookingConfirmDialogFragment.newInstance(
+            val dialog = BookingConfirmDialogFragment.newInstance(
                 confirmNo = confirmNo,
                 date = dateLabel,
                 time = timeLabel
@@ -101,31 +108,43 @@ class BarberDetailsFragment : Fragment() {
 
     private fun setupTimeRecycler() {
         timeSlotsAdapter = TimeSlotsAdapter { index -> viewModel.selectTimeSlot(index) }
-        binding.rvTimeSlots.layoutManager = GridLayoutManager(requireContext(), 3, LinearLayoutManager.VERTICAL, false)
+        binding.rvTimeSlots.layoutManager =
+            GridLayoutManager(requireContext(), 3, LinearLayoutManager.VERTICAL, false)
         binding.rvTimeSlots.adapter = timeSlotsAdapter
     }
 
     private fun setupServicesGrid() {
-        // Map views to service ids
         val svcViews = listOf(
             "haircut" to binding.serviceHaircut,
             "shaving" to binding.serviceShaving,
-            "grooming" to binding.serviceGrooming,
+            "combo" to binding.serviceCombo
         )
 
         svcViews.forEach { (id, view) ->
-            // initialize default state
-            applyServiceSelection(view, selectedServices.contains(id))
             view.setOnClickListener {
-                if (selectedServices.contains(id)) selectedServices.remove(id) else selectedServices.add(id)
-                applyServiceSelection(view, selectedServices.contains(id))
+                // Update the selected service
+                selectedService = id
+
+                // Update all views to reflect the current selection
+                svcViews.forEach { (svcId, svcView) ->
+                    applyServiceSelection(svcView, svcId == selectedService)
+                }
             }
+        }
+
+        // Initialize default selection (optional)
+        selectedService = "haircut"
+        svcViews.forEach { (svcId, svcView) ->
+            applyServiceSelection(svcView, svcId == selectedService)
         }
     }
 
     private fun applyServiceSelection(target: View, selected: Boolean) {
         val drawable = if (selected) {
-            ContextCompat.getDrawable(requireContext(), bharatnaai.R.drawable.filter_chip_selected_background)
+            ContextCompat.getDrawable(
+                requireContext(),
+                bharatnaai.R.drawable.filter_chip_selected_background
+            )
         } else {
             ContextCompat.getDrawable(requireContext(), bharatnaai.R.drawable.card_background)
         }
@@ -159,8 +178,10 @@ class BarberDetailsFragment : Fragment() {
 
     private fun todayDisplayDate(): String {
         val cal = Calendar.getInstance()
-        return String.format(Locale.US, "%02d / %02d / %04d",
-            cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR))
+        return String.format(
+            Locale.US, "%02d / %02d / %04d",
+            cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR)
+        )
     }
 
     private fun observeViewModel() {
@@ -174,7 +195,8 @@ class BarberDetailsFragment : Fragment() {
             // Empty state handling
             val hasSlots = s.timeSlots.isNotEmpty()
             binding.rvTimeSlots.visibility = if (hasSlots) View.VISIBLE else View.GONE
-            binding.tvNoSlots.visibility = if (!hasSlots && !s.isLoading) View.VISIBLE else View.GONE
+            binding.tvNoSlots.visibility =
+                if (!hasSlots && !s.isLoading) View.VISIBLE else View.GONE
         }
 
         viewModel.barbers.observe(viewLifecycleOwner) {

@@ -9,6 +9,7 @@ import androidx.fragment.app.DialogFragment
 import com.app.bharatnaai.ui.my_booking.BookingHistoryFrag
 import bharatnaai.R
 import bharatnaai.databinding.DialogBookingConfirmBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class BookingConfirmDialogFragment : DialogFragment() {
 
@@ -48,6 +49,9 @@ class BookingConfirmDialogFragment : DialogFragment() {
                 .replace(R.id.fragment_container, BookingHistoryFrag.newInstance())
                 .addToBackStack(null)
                 .commit()
+
+            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation)
+            bottomNav.selectedItemId = R.id.nav_bookings
         }
     }
 
@@ -55,7 +59,8 @@ class BookingConfirmDialogFragment : DialogFragment() {
         super.onStart()
         dialog?.window?.apply {
             setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            attributes = attributes.apply { dimAmount = 0.6f }
             setBackgroundDrawableResource(android.R.color.transparent)
         }
     }

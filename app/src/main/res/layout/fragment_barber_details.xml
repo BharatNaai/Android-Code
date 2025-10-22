@@ -79,9 +79,9 @@
                         android:layout_height="48dp"
                         android:background="@drawable/circle_background"
                         android:src="@drawable/ic_person"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:tint="@color/primary_text_color" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -140,8 +140,8 @@
                     android:id="@+id/tv_select_date_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_12dp"
-                    android:padding="@dimen/margin_8dp"
+                    android:layout_marginTop="@dimen/margin_16dp"
+                    android:paddingVertical="@dimen/padding_8dp"
                     android:text="Select Date"
                     android:textColor="@color/primary_text_color"
                     android:textSize="16sp"
@@ -152,7 +152,7 @@
                     android:id="@+id/tv_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_12dp"
+                    android:layout_marginTop="@dimen/margin_16dp"
                     android:background="@drawable/input_field_background"
                     android:drawableStart="@drawable/ic_calender"
                     android:drawablePadding="@dimen/padding_12dp"
@@ -165,58 +165,17 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/card_barber_header" />
 
-                <!-- Select Date & Time -->
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_slots"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_12dp"
-                    android:padding="@dimen/margin_8dp"
-                    android:text="@string/book_available_slots"
-                    android:textColor="@color/primary_text_color"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toTopOf="@id/rv_time_slots"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_select_date_time" />
-
-                <!-- Time slots -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_time_slots"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_slots"
-                    tools:itemCount="6"
-                    tools:listitem="@layout/item_time_slot" />
-
-                <!-- Empty state for no slots -->
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_no_slots"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="No slots available for selected date"
-                    android:textColor="@color/secondary_text_color"
-                    android:textSize="14sp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_date" />
-
                 <!-- Select Services -->
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_select_services"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="@dimen/margin_16dp"
                     android:text="Select Services"
                     android:textColor="@color/primary_text_color"
                     android:textSize="16sp"
-                    android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/rv_time_slots" />
+                    app:layout_constraintTop_toBottomOf="@id/tv_select_date_time" />
 
                 <!-- Services Grid -->
                 <GridLayout
@@ -277,7 +236,7 @@
 
                     <!-- Grooming Service -->
                     <androidx.appcompat.widget.LinearLayoutCompat
-                        android:id="@+id/service_grooming"
+                        android:id="@+id/service_combo"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_columnWeight="1"
@@ -290,12 +249,52 @@
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Grooming"
+                            android:text="Combo"
                             android:textColor="@color/primary_text_color"
                             android:textSize="16sp"
                             android:textStyle="bold" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
                 </GridLayout>
+
+                <!-- Select Date & Time -->
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_slots"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_12dp"
+                    android:paddingVertical="@dimen/padding_8dp"
+                    android:text="@string/book_available_slots"
+                    android:textColor="@color/primary_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toTopOf="@id/rv_time_slots"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/services_grid" />
+
+                <!-- Time slots -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_time_slots"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_slots"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/item_time_slot" />
+
+                <!-- Empty state for no slots -->
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_no_slots"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="No slots available for selected date"
+                    android:textColor="@color/secondary_text_color"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_slots" />
 
                 <!-- Promo Code -->
                 <androidx.appcompat.widget.LinearLayoutCompat
