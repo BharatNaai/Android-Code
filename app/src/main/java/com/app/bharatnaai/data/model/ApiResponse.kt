@@ -55,7 +55,8 @@ data class ResetPasswordResponse(
 data class CustomerDetails(
     val email: String,
     val fullName: String,
-    val phone: String
+    val phone: String,
+    val userId: Long
 )
 
 data class BarberSlotsAvailableResponse(
@@ -73,5 +74,10 @@ data class Slot(
     val startTime: String,
     val endTime: String,
     val status: String
+)
+
+data class BookingSlot(
+    val success :Boolean,
+    val message : String
 )
 

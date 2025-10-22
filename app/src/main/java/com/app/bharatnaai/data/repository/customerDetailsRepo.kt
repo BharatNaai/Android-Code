@@ -33,7 +33,8 @@ class CustomerDetailsRepo(private val context: Context) {
                     val customerDetails = CustomerDetails(
                         email = body.email,
                         fullName = body.fullName,
-                        phone = body.phone
+                        phone = body.phone,
+                        userId = body.userId
                     )
                     ApiResult.Success(customerDetails)
                 } else {

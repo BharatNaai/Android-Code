@@ -2,6 +2,7 @@ package com.app.bharatnaai.data.network
 
 import com.app.bharatnaai.data.model.ApiResponse
 import com.app.bharatnaai.data.model.BarberSlotsAvailableResponse
+import com.app.bharatnaai.data.model.BookingSlot
 import com.app.bharatnaai.data.model.CustomerDetails
 import com.app.bharatnaai.data.model.ForgetPasswordRequest
 import com.app.bharatnaai.data.model.ForgetPasswordResponse
@@ -14,6 +15,7 @@ import com.app.bharatnaai.data.model.ResetPasswordResponse
 import com.app.bharatnaai.data.model.Salon
 import com.app.bharatnaai.data.model.TokenRefreshRequest
 import com.app.bharatnaai.data.model.TokenRefreshResponse
+import com.app.bharatnaai.data.model.SlotBookingRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -70,4 +72,9 @@ interface ApiService {
         @Query("barberId") barberId: Int,
         @Query("date") date: String
     ): Response<BarberSlotsAvailableResponse>
+
+    @POST("barbers/slot-booking")
+    suspend fun bookSlot(
+        @Body request: SlotBookingRequest
+    ): Response<BookingSlot>
 }

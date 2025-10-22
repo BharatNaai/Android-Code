@@ -44,3 +44,9 @@ data class ResetPasswordRequest(
     val password: String
 )
 
+data class SlotBookingRequest(
+    @SerializedName("customerId")
+    val customerId : Long,
+    @SerializedName("slotId")
+    val slotId :Int
+)

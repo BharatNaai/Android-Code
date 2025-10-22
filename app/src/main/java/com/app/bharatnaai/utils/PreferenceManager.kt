@@ -9,6 +9,7 @@ object PreferenceManager {
     private const val USER_NAME = "user_name"
     private const val USER_EMAIL = "user_email"
     private const val USER_PHONE = "user_phone"
+    private const val USER_ID = "user_id"
 
     private fun getPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -37,6 +38,13 @@ object PreferenceManager {
     fun getUserPhone(context: Context): String? {
         return getPreferences(context).getString(USER_PHONE, null)
     }
+
+    fun saveUserId(context: Context, userId: Long) {
+        getPreferences(context).edit().putLong(USER_ID, userId).apply()
+    }
+
+    fun getUserId(context: Context): Long =
+        getPreferences(context).getLong(USER_ID, 0)
 
     fun clearAll(context: Context) {
         getPreferences(context).edit().clear().apply()

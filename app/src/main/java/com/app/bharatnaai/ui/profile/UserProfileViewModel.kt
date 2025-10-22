@@ -48,7 +48,8 @@ class UserProfileViewModel(application: Application) : AndroidViewModel(applicat
         val profileData = CustomerDetails(
             fullName = PreferenceManager.getUserName(context)?:"",
             phone = PreferenceManager.getUserPhone(context)?:"",
-            email = PreferenceManager.getUserEmail(context)?:""
+            email = PreferenceManager.getUserEmail(context)?:"",
+            userId = PreferenceManager.getUserId(context)?:0
         )
         
         _profileState.value = _profileState.value?.copy(

@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.app.bharatnaai.data.model.Barber
+import com.app.bharatnaai.data.model.BookingSlot
 import com.app.bharatnaai.data.network.ApiClient
 import com.app.bharatnaai.data.repository.BarberSlotsRepository
 import com.app.bharatnaai.data.model.Slot
@@ -42,6 +43,12 @@ class BarberDetailsViewModel(app: Application) : AndroidViewModel(app) {
     private val _barbers = MutableLiveData<List<Barber>>()
     val barbers: LiveData<List<Barber>> = _barbers
 
+    private val _bookingResult = MutableLiveData<BookingSlot?>()
+    val bookingResult: LiveData<BookingSlot?> = _bookingResult
+
+    private val _bookingError = MutableLiveData<String?>()
+    val bookingError: LiveData<String?> = _bookingError
+
     private val slotsRepo = BarberSlotsRepository(getApplication(), ApiClient.apiService)
 
     init {
@@ -74,6 +81,21 @@ class BarberDetailsViewModel(app: Application) : AndroidViewModel(app) {
                 _state.value = _state.value?.copy(isLoading = false, timeSlots = slots, selectedTimeIndex = -1)
             } catch (e: Exception) {
                 _state.value = _state.value?.copy(isLoading = false, error = e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    fun bookSlot(customerId: Long, slotId: Int) {
+        _state.value = _state.value?.copy(isLoading = true)
+        _bookingError.value = null
+        viewModelScope.launch {
+            try {
+                val result = slotsRepo.bookSlot(customerId, slotId)
+                _bookingResult.value = result
+                _state.value = _state.value?.copy(isLoading = false)
+            } catch (e: Exception) {
+                _bookingError.value = e.message ?: "Failed to book slot"
+                _state.value = _state.value?.copy(isLoading = false)
             }
         }
     }

@@ -16,6 +16,10 @@ import com.app.bharatnaai.ui.custom_dialog.BookingConfirmDialogFragment
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import android.content.Intent
+import com.app.bharatnaai.data.session.SessionManager
+import com.app.bharatnaai.ui.auth.login.LoginActivity
+import com.app.bharatnaai.utils.PreferenceManager
 
 class BarberDetailsFragment : Fragment() {
 
@@ -77,32 +81,18 @@ class BarberDetailsFragment : Fragment() {
                 return@setOnClickListener
             }
             val slot = slots[idx]
-
-            // Format date: 20 October 2025
-            val dateLabel = try {
-                val input = SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(slot.slotDate)
-                SimpleDateFormat("d MMMM yyyy", Locale.US).format(input!!)
-            } catch (e: Exception) {
-                slot.slotDate
+            // Check access token
+            val session = SessionManager.getInstance(requireContext())
+            val customerId = PreferenceManager.getUserId(requireContext())
+            val token = session.getAccessToken()
+            if (token.isNullOrEmpty() && customerId != null) {
+                Toast.makeText(requireContext(), "Unable to determine customer. Please login.", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(requireContext(), LoginActivity::class.java))
+                return@setOnClickListener
             }
 
-            // Format time: 09:40 AM
-            val timeLabel = try {
-                val tin = SimpleDateFormat("HH:mm:ss", Locale.US).parse(slot.startTime)
-                SimpleDateFormat("hh:mm a", Locale.US).format(tin!!)
-            } catch (e: Exception) {
-                slot.startTime
-            }
-
-            val confirmNo =
-                "#BK" + (100000 + kotlin.random.Random.Default.nextInt(900000)).toString()
-
-            val dialog = BookingConfirmDialogFragment.newInstance(
-                confirmNo = confirmNo,
-                date = dateLabel,
-                time = timeLabel
-            )
-            dialog.show(parentFragmentManager, "booking_confirm_dialog")
+            // Proceed to book
+            viewModel.bookSlot(customerId , slot.id)
         }
     }
 
@@ -201,6 +191,41 @@ class BarberDetailsFragment : Fragment() {
 
         viewModel.barbers.observe(viewLifecycleOwner) {
             // could populate a popup list later; for now we cycle on tap
+        }
+
+        viewModel.bookingResult.observe(viewLifecycleOwner) { result ->
+            if (result == null) return@observe
+            if (result.success && result.message.equals("Booking successful", ignoreCase = true)) {
+                // On success, show confirmation dialog
+                val idx = viewModel.state.value?.selectedTimeIndex ?: -1
+                val slots = viewModel.state.value?.timeSlots.orEmpty()
+                if (idx in slots.indices) {
+                    val slot = slots[idx]
+                    val dateLabel = try {
+                        val input = SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(slot.slotDate)
+                        SimpleDateFormat("d MMMM yyyy", Locale.US).format(input!!)
+                    } catch (e: Exception) {
+                        slot.slotDate
+                    }
+                    val timeLabel = try {
+                        val tin = SimpleDateFormat("HH:mm:ss", Locale.US).parse(slot.startTime)
+                        SimpleDateFormat("hh:mm a", Locale.US).format(tin!!)
+                    } catch (e: Exception) {
+                        slot.startTime
+                    }
+                    val confirmNo = "#BK" + (100000 + kotlin.random.Random.Default.nextInt(900000)).toString()
+                    BookingConfirmDialogFragment.newInstance(confirmNo, dateLabel, timeLabel)
+                        .show(parentFragmentManager, "booking_confirm_dialog")
+                }
+            } else {
+                Toast.makeText(requireContext(), result.message.ifBlank { "Booking failed" }, Toast.LENGTH_LONG).show()
+            }
+        }
+
+        viewModel.bookingError.observe(viewLifecycleOwner) { err ->
+            if (!err.isNullOrEmpty()) {
+                Toast.makeText(requireContext(), err, Toast.LENGTH_LONG).show()
+            }
         }
     }
 

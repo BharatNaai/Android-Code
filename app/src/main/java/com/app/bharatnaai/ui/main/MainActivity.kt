@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity() {
                     PreferenceManager.saveUserName(this, customerData.fullName)
                     PreferenceManager.saveUserEmail(this, customerData.email)
                     PreferenceManager.saveUserPhone(this, customerData.phone)
+                    PreferenceManager.saveUserId(this, customerData.userId)
                 }
                 is ApiResult.Error -> {
                     Toast.makeText(this, "Error: ${result.message}", Toast.LENGTH_LONG).show()
