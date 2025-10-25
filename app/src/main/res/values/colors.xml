@@ -44,4 +44,5 @@
     <!-- Button Colors -->
     <color name="button_primary_start">#FFB74D</color>
     <color name="button_primary_end">#FF9800</color>
+    <color name="notification_background">#3D2914</color>
 </resources>

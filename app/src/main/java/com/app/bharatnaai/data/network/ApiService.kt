@@ -1,7 +1,8 @@
 package com.app.bharatnaai.data.network
 
 import com.app.bharatnaai.data.model.ApiResponse
-import com.app.bharatnaai.data.model.BarberSlotsAvailableResponse
+import com.app.bharatnaai.data.model.BarberSlotsAvailableResponseRaw
+import com.app.bharatnaai.data.model.BookingDetails
 import com.app.bharatnaai.data.model.BookingSlot
 import com.app.bharatnaai.data.model.CustomerDetails
 import com.app.bharatnaai.data.model.ForgetPasswordRequest
@@ -67,14 +68,20 @@ interface ApiService {
         @Path("salonId") salonId: Int
     ): Response<Salon>
 
-    @GET("barbers/slots")
+    @GET("barbers/{barberId}/slots")
     suspend fun getAvailableSlots(
-        @Query("barberId") barberId: Int,
-        @Query("date") date: String
-    ): Response<BarberSlotsAvailableResponse>
+        @Path("barberId") barberId: Int,
+        @Query("date") date: String,
+        @Query("serviceType") serviceType: String
+    ): Response<BarberSlotsAvailableResponseRaw>
 
     @POST("barbers/slot-booking")
     suspend fun bookSlot(
         @Body request: SlotBookingRequest
     ): Response<BookingSlot>
+
+    @GET("barbers/booking-details")
+    suspend fun getBookingDetails(
+        @Query("userId") userId: Long
+    ) : Response<List<BookingDetails>>
 }

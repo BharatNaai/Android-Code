@@ -29,6 +29,8 @@ class BarberDetailsFragment : Fragment() {
 
     private lateinit var timeSlotsAdapter: TimeSlotsAdapter
     private var selectedService: String? = null
+    private var currentBarberId: Int? = null
+    private var currentApiDate: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,9 +61,11 @@ class BarberDetailsFragment : Fragment() {
         }
         setupDatePicker(barberId)
         if (barberId != null) {
+            currentBarberId = barberId
             val apiDate = todayApiDate()
+            currentApiDate = apiDate
             binding.tvDate.text = todayDisplayDate()
-            viewModel.fetchSlots(barberId, apiDate)
+            viewModel.fetchSlots(barberId, apiDate, selectedService ?: "")
         }
 
         binding.llPromo.setOnClickListener {
@@ -85,14 +89,21 @@ class BarberDetailsFragment : Fragment() {
             val session = SessionManager.getInstance(requireContext())
             val customerId = PreferenceManager.getUserId(requireContext())
             val token = session.getAccessToken()
-            if (token.isNullOrEmpty() && customerId != null) {
-                Toast.makeText(requireContext(), "Unable to determine customer. Please login.", Toast.LENGTH_SHORT).show()
+            if (token.isNullOrEmpty() || customerId == null) {
+                Toast.makeText(
+                    requireContext(),
+                    "Unable to determine customer. Please login.",
+                    Toast.LENGTH_SHORT
+                ).show()
                 startActivity(Intent(requireContext(), LoginActivity::class.java))
                 return@setOnClickListener
             }
 
             // Proceed to book
-            viewModel.bookSlot(customerId , slot.id)
+            val ids = if (slot.serviceType.equals("COMBO", ignoreCase = true) && slot.secondaryId != null) {
+                listOf(slot.id, slot.secondaryId)
+            } else listOf(slot.id)
+            viewModel.bookSlots(customerId, ids)
         }
     }
 
@@ -105,9 +116,9 @@ class BarberDetailsFragment : Fragment() {
 
     private fun setupServicesGrid() {
         val svcViews = listOf(
-            "haircut" to binding.serviceHaircut,
-            "shaving" to binding.serviceShaving,
-            "combo" to binding.serviceCombo
+            "HAIRCUT" to binding.serviceHaircut,
+            "BEARD" to binding.serviceShaving,
+            "COMBO" to binding.serviceCombo
         )
 
         svcViews.forEach { (id, view) ->
@@ -119,13 +130,13 @@ class BarberDetailsFragment : Fragment() {
                 svcViews.forEach { (svcId, svcView) ->
                     applyServiceSelection(svcView, svcId == selectedService)
                 }
-            }
-        }
 
-        // Initialize default selection (optional)
-        selectedService = "haircut"
-        svcViews.forEach { (svcId, svcView) ->
-            applyServiceSelection(svcView, svcId == selectedService)
+                // Re-fetch slots for the current selection
+                val barberId = currentBarberId
+                if (barberId != null) {
+                    viewModel.fetchSlots(barberId, currentApiDate.ifBlank { todayApiDate() }, selectedService ?: "")
+                }
+            }
         }
     }
 
@@ -150,7 +161,9 @@ class BarberDetailsFragment : Fragment() {
                     val apiDate = String.format(Locale.US, "%04d-%02d-%02d", y, m + 1, d)
                     val disp = String.format(Locale.US, "%02d / %02d / %04d", d, m + 1, y)
                     binding.tvDate.text = disp
-                    barberId?.let { viewModel.fetchSlots(it, apiDate) }
+                    currentApiDate = apiDate
+                    currentBarberId = barberId
+                    barberId?.let { viewModel.fetchSlots(it, apiDate, selectedService ?: "") }
                 },
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
@@ -195,7 +208,7 @@ class BarberDetailsFragment : Fragment() {
 
         viewModel.bookingResult.observe(viewLifecycleOwner) { result ->
             if (result == null) return@observe
-            if (result.success && result.message.equals("Booking successful", ignoreCase = true)) {
+            if (result.success && result.message.contains("Booking successful", ignoreCase = true)) {
                 // On success, show confirmation dialog
                 val idx = viewModel.state.value?.selectedTimeIndex ?: -1
                 val slots = viewModel.state.value?.timeSlots.orEmpty()
@@ -213,12 +226,17 @@ class BarberDetailsFragment : Fragment() {
                     } catch (e: Exception) {
                         slot.startTime
                     }
-                    val confirmNo = "#BK" + (100000 + kotlin.random.Random.Default.nextInt(900000)).toString()
+                    val confirmNo =
+                        "#BK" + (100000 + kotlin.random.Random.Default.nextInt(900000)).toString()
                     BookingConfirmDialogFragment.newInstance(confirmNo, dateLabel, timeLabel)
                         .show(parentFragmentManager, "booking_confirm_dialog")
                 }
             } else {
-                Toast.makeText(requireContext(), result.message.ifBlank { "Booking failed" }, Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    requireContext(),
+                    result.message.ifBlank { "Booking failed" },
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
 

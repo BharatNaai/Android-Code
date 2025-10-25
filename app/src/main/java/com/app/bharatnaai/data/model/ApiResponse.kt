@@ -1,6 +1,7 @@
 package com.app.bharatnaai.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.google.gson.JsonObject
 
 data class ApiResponse<T>(
     @SerializedName("success")
@@ -60,20 +61,33 @@ data class CustomerDetails(
 )
 
 data class BarberSlotsAvailableResponse(
-    val totalSlots: Int,
-    val slots: List<Slot>,
-    val success: Boolean
+    @SerializedName("totalSlots") val totalSlots: Int,
+    @SerializedName("slots") val slots: List<Slot>,
+    @SerializedName("success") val success: Boolean,
+    @SerializedName("barberId") val barberId: Int? = null,
+    @SerializedName("serviceType") val serviceType: String? = null,
+    @SerializedName("date") val date: String? = null
+)
+
+// Raw response used to accommodate heterogeneous slot objects when serviceType is COMBO
+data class BarberSlotsAvailableResponseRaw(
+    @SerializedName("totalSlots") val totalSlots: Int,
+    @SerializedName("slots") val slots: List<JsonObject>,
+    @SerializedName("success") val success: Boolean,
+    @SerializedName("barberId") val barberId: Int? = null,
+    @SerializedName("serviceType") val serviceType: String? = null,
+    @SerializedName("date") val date: String? = null
 )
 
 data class Slot(
-    val id: Int,
-    val barberId: Int,
-    val salonId: Int,
-    val serviceType: String,
-    val slotDate: String,
-    val startTime: String,
-    val endTime: String,
-    val status: String
+    @SerializedName("slotId") val id: Int,
+    @SerializedName("serviceType") val serviceType: String,
+    @SerializedName("slotDate") val slotDate: String,
+    @SerializedName("startTime") val startTime: String,
+    @SerializedName("endTime") val endTime: String,
+    @SerializedName("status") val status: String,
+    // Not from backend; used when serviceType == COMBO to carry second slot id
+    val secondaryId: Int? = null
 )
 
 data class BookingSlot(
@@ -81,3 +95,16 @@ data class BookingSlot(
     val message : String
 )
 
+data class BookingDetails(
+    val barberName: String,
+    val barberPhone: String,
+    val salonName: String,
+    val salonAddress: String,
+    val salonImage: String,
+    val bookingDate: String,
+    val bookingId: String,
+    val serviceType: String,
+    val startTime: String,
+    val endTime: String,
+    val status: String
+)

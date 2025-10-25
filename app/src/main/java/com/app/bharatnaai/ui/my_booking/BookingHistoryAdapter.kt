@@ -1,68 +1,39 @@
 package com.app.bharatnaai.ui.my_booking
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import bharatnaai.databinding.ItemBookingSuccessBinding
-import bharatnaai.databinding.ItemBookingSuccessSectionBinding
+import bharatnaai.databinding.ItemBookingCardBinding
 
-data class BookingSuccessItem(
+enum class BookingStatus { UPCOMING, COMPLETED }
+
+data class BookingItem(
     val id: String,
-    val salonName: String,
-    val serviceName: String,
-    val confirmationNo: String,
-    val dateLabel: String,
-    val timeLabel: String
+    val status: BookingStatus,
+    val title: String,
+    val subtitle: String,
+    val dateTime: String,
+    val price: String,
+    val imageUrl: String? = null
 )
 
-data class BookingSuccessSection(
-    val sectionTitle: String,
-    val items: List<BookingSuccessItem>
-)
+class BookingHistoryAdapter(
+    private val listener: Listener
+) : ListAdapter<BookingItem, BookingHistoryAdapter.ItemVH>(ItemDiff()) {
 
-class BookingSuccessAdapter(
-    private val onItemClick: (BookingSuccessItem) -> Unit
-) : ListAdapter<BookingSuccessSection, RecyclerView.ViewHolder>(SectionDiff()) {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val binding = ItemBookingSuccessSectionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return SectionVH(binding)
+    interface Listener {
+        fun onViewDetails(item: BookingItem)
+        fun onReschedule(item: BookingItem)
+        fun onRebook(item: BookingItem)
+        fun onReview(item: BookingItem)
+        fun onOverflow(anchor: View, item: BookingItem)
     }
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as SectionVH).bind(getItem(position))
-    }
-
-    inner class SectionVH(private val binding: ItemBookingSuccessSectionBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(section: BookingSuccessSection) {
-            binding.tvSectionTitle.text = section.sectionTitle
-            val inner = BookingSuccessItemAdapter(onItemClick)
-            binding.rvSectionItems.apply {
-                layoutManager = LinearLayoutManager(itemView.context)
-                adapter = inner
-                setHasFixedSize(false)
-            }
-            inner.submitList(section.items)
-        }
-    }
-
-    class SectionDiff : DiffUtil.ItemCallback<BookingSuccessSection>() {
-        override fun areItemsTheSame(oldItem: BookingSuccessSection, newItem: BookingSuccessSection): Boolean =
-            oldItem.sectionTitle == newItem.sectionTitle
-        override fun areContentsTheSame(oldItem: BookingSuccessSection, newItem: BookingSuccessSection): Boolean =
-            oldItem == newItem
-    }
-}
-
-class BookingSuccessItemAdapter(
-    private val onItemClick: (BookingSuccessItem) -> Unit
-) : ListAdapter<BookingSuccessItem, BookingSuccessItemAdapter.ItemVH>(ItemDiff()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemVH {
-        val binding = ItemBookingSuccessBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemBookingCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ItemVH(binding)
     }
 
@@ -70,19 +41,33 @@ class BookingSuccessItemAdapter(
         holder.bind(getItem(position))
     }
 
-    inner class ItemVH(private val binding: ItemBookingSuccessBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: BookingSuccessItem) {
-            binding.tvSalonName.text = item.salonName
-            binding.tvServiceName.text = item.serviceName
-            binding.tvConfirmNo.text = item.confirmationNo
-            binding.tvDate.text = item.dateLabel
-            binding.tvTime.text = item.timeLabel
-            binding.root.setOnClickListener { onItemClick(item) }
+    inner class ItemVH(private val binding: ItemBookingCardBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: BookingItem) {
+            binding.tvStatus.text = if (item.status == BookingStatus.UPCOMING) "CONFIRMED" else "COMPLETED"
+            binding.tvTitle.text = item.title
+            binding.tvSubtitle.text = item.subtitle
+            binding.tvMeta.text = item.dateTime + "  •  " + item.price
+
+            // Button visibility and actions per status
+            if (item.status == BookingStatus.UPCOMING) {
+                binding.btnViewDetails.text = "View Details"
+                binding.btnReschedule.text = "Reschedule"
+                binding.btnReschedule.setOnClickListener { listener.onReschedule(item) }
+                binding.btnViewDetails.setOnClickListener { listener.onViewDetails(item) }
+            } else {
+                binding.btnViewDetails.text = "Rebook"
+                binding.btnReschedule.text = "Leave a Review"
+                binding.btnReschedule.setOnClickListener { listener.onReview(item) }
+                binding.btnViewDetails.setOnClickListener { listener.onRebook(item) }
+            }
+
+            binding.btnOverflow.setOnClickListener { view -> listener.onOverflow(view, item) }
+            binding.root.setOnClickListener { listener.onViewDetails(item) }
         }
     }
 
-    class ItemDiff : DiffUtil.ItemCallback<BookingSuccessItem>() {
-        override fun areItemsTheSame(oldItem: BookingSuccessItem, newItem: BookingSuccessItem): Boolean = oldItem.id == newItem.id
-        override fun areContentsTheSame(oldItem: BookingSuccessItem, newItem: BookingSuccessItem): Boolean = oldItem == newItem
+    class ItemDiff : DiffUtil.ItemCallback<BookingItem>() {
+        override fun areItemsTheSame(oldItem: BookingItem, newItem: BookingItem): Boolean = oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: BookingItem, newItem: BookingItem): Boolean = oldItem == newItem
     }
 }

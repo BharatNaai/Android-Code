@@ -47,6 +47,6 @@ data class ResetPasswordRequest(
 data class SlotBookingRequest(
     @SerializedName("customerId")
     val customerId : Long,
-    @SerializedName("slotId")
-    val slotId :Int
+    @SerializedName("slotIds")
+    val slotIds : List<Int>
 )

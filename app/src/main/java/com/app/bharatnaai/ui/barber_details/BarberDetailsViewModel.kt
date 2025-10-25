@@ -72,12 +72,14 @@ class BarberDetailsViewModel(app: Application) : AndroidViewModel(app) {
         _state.value = _state.value?.copy(selectedTimeIndex = index)
     }
 
-    fun fetchSlots(barberId: Int, date: String) {
+    fun fetchSlots(barberId: Int, date: String, serviceType: String) {
         _state.value = _state.value?.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
-                val body = slotsRepo.getAvailableSlots(barberId, date)
-                val slots = body?.slots ?: emptyList()
+                val body = slotsRepo.getAvailableSlots(barberId, date, serviceType)
+                val slots = body?.slots
+                    ?.filter { it.status.equals("AVAILABLE", ignoreCase = true) }
+                    ?: emptyList()
                 _state.value = _state.value?.copy(isLoading = false, timeSlots = slots, selectedTimeIndex = -1)
             } catch (e: Exception) {
                 _state.value = _state.value?.copy(isLoading = false, error = e.message ?: "Unknown error")
@@ -85,12 +87,12 @@ class BarberDetailsViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun bookSlot(customerId: Long, slotId: Int) {
+    fun bookSlots(customerId: Long, slotIds: List<Int>) {
         _state.value = _state.value?.copy(isLoading = true)
         _bookingError.value = null
         viewModelScope.launch {
             try {
-                val result = slotsRepo.bookSlot(customerId, slotId)
+                val result = slotsRepo.bookSlot(customerId, slotIds)
                 _bookingResult.value = result
                 _state.value = _state.value?.copy(isLoading = false)
             } catch (e: Exception) {
