@@ -26,4 +26,5 @@
     <dimen name="text_size_16sp">16sp</dimen>
 
     <dimen name="min_width_72dp">72dp</dimen>
+    <dimen name="profile_background_height">148dp</dimen>
 </resources>

@@ -18,8 +18,10 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import bharatnaai.R
 import bharatnaai.databinding.FragmentHomeBinding
+import com.app.bharatnaai.data.model.Salon
 import com.app.bharatnaai.ui.search.SearchFragment
 import com.app.bharatnaai.ui.notifications.NotificationFragment
+import com.app.bharatnaai.ui.saloon_details.SaloonDetailsFragment
 import com.app.bharatnaai.utils.LocationHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -68,9 +70,11 @@ class HomeFragment : Fragment() {
 
     private fun setupRecyclerView() {
         // Featured Salons Adapter
-        featuredSalonsAdapter = FeaturedSalonsAdapter { salon ->
-            Toast.makeText(context, "Selected: ${salon.salonName}", Toast.LENGTH_SHORT).show()
-        }
+        featuredSalonsAdapter = FeaturedSalonsAdapter(
+            onSalonClick = { salon ->
+                navigateToSalonDetails(salon)
+            }
+        )
 
         binding.rvFeaturedSalons.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -104,12 +108,23 @@ class HomeFragment : Fragment() {
 
     private fun updateUI(state: HomeState) {
         // Handle loading states, errors, etc.
+        
         if (state.error != null) {
             Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
             viewModel.clearError()
         }
     }
 
+    private fun navigateToSalonDetails(salon: Salon) {
+        val fragment = SaloonDetailsFragment()
+        fragment.arguments = Bundle().apply {
+            putInt("salonId", salon.salonId)
+        }
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment) // Assuming you have a container with this ID
+            .addToBackStack(null)
+            .commit()
+    }
 
     private fun setupClickListeners() {
 

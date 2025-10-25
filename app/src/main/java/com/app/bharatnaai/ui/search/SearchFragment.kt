@@ -66,9 +66,6 @@ class SearchFragment : Fragment() {
 
     private fun setupRecyclerView() {
         salonAdapter = SalonSearchAdapter(
-            onSalonClick = { salon ->
-                navigateToSalonDetails(salon)
-            },
             onBookNowClick = { salon ->
                 navigateToSalonDetails(salon)
             }

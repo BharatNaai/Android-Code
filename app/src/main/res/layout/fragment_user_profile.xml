@@ -10,263 +10,220 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="80dp">
+        android:paddingBottom="24dp">
 
-        <!-- Header Section -->
+        <!-- top bar -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/header_section"
+            android:id="@+id/top_bar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:background="#7C5617"
+            android:padding="@dimen/padding_12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <!-- Back Button -->
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/btn_back"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_arrow_back"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="4dp"
-                android:visibility="invisible"
-                app:tint="@color/primary_text_color"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-            <!-- Profile Title -->
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_profile_title"
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_title"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:gravity="center"
                 android:text="Profile"
                 android:textColor="@color/primary_text_color"
-                android:textSize="24sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
-                android:fontFamily="sans-serif-medium"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-            <!-- Edit Button -->
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iv_edit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_edit"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                app:tint="@color/primary_text_color"
-                android:visibility="invisible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Logged In Content -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/logged_in_content"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header_section">
+            app:layout_constraintTop_toBottomOf="@id/top_bar">
 
-            <!-- Profile Info Section -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/profile_info_section"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="32dp"
-                android:padding="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
+            <!-- Gradient header with title and edit icon -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/header_section"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/profile_background_height"
+                android:background="@drawable/header_background"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/iv_profile_image"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:layout_marginTop="@dimen/margin_12dp"
+                    android:contentDescription="profileImage"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/profile_image"
+                    app:layout_constraintBottom_toTopOf="@id/tv_user_name"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerFamily.Circular" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:textColor="@color/primary_text_color"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/iv_profile_image"
+                    tools:text="Jane Doe" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Info card: phone, email, address -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_contact"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/header_section">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                    <!-- Profile Image (Left side) -->
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/iv_profile_image"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_profile"
-                        android:background="@color/accent_color"
-                        android:contentDescription="profileImage"
-                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerFamily.Circular"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/rowEmailContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:gravity="center_vertical"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
 
-                    <!-- Name, Phone, Email (Right side stacked vertically) -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:orientation="vertical"
-                        app:layout_constraintStart_toEndOf="@id/iv_profile_image"
-                        app:layout_constraintTop_toTopOf="@id/iv_profile_image"
-                        app:layout_constraintBottom_toBottomOf="@id/iv_profile_image"
-                        app:layout_constraintEnd_toEndOf="parent">
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_bookmark_filled"
+                            app:tint="@color/secondary_text_color" />
 
-                        <!-- User Name -->
                         <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/tv_user_name"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tvEmail"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Sophia Carter"
-                            android:textColor="@color/primary_text_color"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:fontFamily="sans-serif-medium"
-                            tools:text="Sophia Carter" />
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:text=""
+                            tools:text="janedoe@email.com"
+                            android:textColor="@color/secondary_text_color"
+                            android:textSize="16sp" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
-                        <!-- Phone Number -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/notification_background" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/rowPhoneContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:gravity="center_vertical"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_notification"
+                            app:tint="@color/secondary_text_color" />
+
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tv_phone_number"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="+1 (555) 123-4567"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:text=""
+                            tools:text="+1 234 567 890"
                             android:textColor="@color/secondary_text_color"
-                            android:textSize="15sp"
-                            tools:text="+91 9876543210" />
-
-                        <!-- Email -->
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/tv_email"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="sophia.carter@email.com"
-                            android:textColor="@color/secondary_text_color"
-                            android:textSize="15sp"
-                            tools:text="sophia.carter@email.com" />
-                    </LinearLayout>
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                            android:textSize="16sp" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </androidx.appcompat.widget.LinearLayoutCompat>
             </com.google.android.material.card.MaterialCardView>
 
-
-
-
-            <!-- Booking History Section -->
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_booking_history"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
-                android:text="Booking History"
-                android:textColor="@color/primary_text_color"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-medium"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/profile_info_section" />
-
-            <!-- Booking History RecyclerView -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_booking_history"
+            <!-- Menu list -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_menu"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:clipToPadding="false"
+                android:layout_margin="@dimen/margin_12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_booking_history"
-                tools:itemCount="2"
-                tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_booking_history" />
+                app:layout_constraintTop_toBottomOf="@id/card_contact">
 
-            <!-- Saved Salons Section -->
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_saved_salons"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="32dp"
-                android:text="Saved Salons"
-                android:textColor="@color/primary_text_color"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-medium"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rv_booking_history" />
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-            <!-- Saved Salons RecyclerView -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_saved_salons"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:clipToPadding="false"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_saved_salons"
-                tools:itemCount="2"
-                tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_saved_salon" />
+                    <include
+                        android:id="@+id/include_profile_menu"
+                        layout="@layout/row_profile_menu_item" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </com.google.android.material.card.MaterialCardView>
 
-            <!-- Logout Button -->
-            <com.google.android.material.button.MaterialButton
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_logout"
                 android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="32dp"
-                android:background="@drawable/button_primary_selector"
-                android:fontFamily="sans-serif-medium"
-                android:text="Logout"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_12dp"
+                android:background="@drawable/button_primary_background"
+                android:text="LOGOUT"
+                android:textAllCaps="false"
                 android:textColor="@color/text_on_primary"
-                android:textSize="16sp"
                 android:textStyle="bold"
-                app:backgroundTint="@null"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rv_saved_salons" />
-
+                app:layout_constraintTop_toBottomOf="@id/card_menu"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Logged Out Content -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/logged_out_content"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header_section">
+            app:layout_constraintTop_toBottomOf="@id/top_bar">
 
-            <!-- Login Prompt Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginEnd="32dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
                 app:cardBackgroundColor="@color/input_background"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -274,70 +231,59 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="32dp">
+                    android:padding="24dp">
 
-                    <!-- Profile Icon -->
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/iv_login_icon"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/ic_profile"
-                        app:tint="@color/secondary_text_color"
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        android:src="@drawable/ic_barber_logo"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="@color/secondary_text_color" />
 
-                    <!-- Login Title -->
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tv_login_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="24dp"
+                        android:layout_marginTop="16dp"
                         android:text="Login to view your profile"
                         android:textColor="@color/primary_text_color"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
-                        android:fontFamily="sans-serif-medium"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/iv_login_icon" />
 
-                    <!-- Login Description -->
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tv_login_description"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="8dp"
                         android:gravity="center"
-                        android:text="Access your bookings, saved salons,\nand personalized recommendations"
+                        android:text="Access your bookings, saved salons, and personalized recommendations"
                         android:textColor="@color/secondary_text_color"
-                        android:textSize="16sp"
-                        android:lineSpacingExtra="4dp"
+                        android:textSize="14sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tv_login_title" />
 
-                    <!-- Login Button -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_profile_login"
                         android:layout_width="0dp"
-                        android:layout_height="56dp"
-                        android:layout_marginTop="32dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="16dp"
                         android:background="@drawable/button_primary_selector"
-                        android:fontFamily="sans-serif-medium"
                         android:text="Login / Sign Up"
                         android:textColor="@color/text_on_primary"
-                        android:textSize="16sp"
                         android:textStyle="bold"
                         app:backgroundTint="@null"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tv_login_description" />
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
             </androidx.cardview.widget.CardView>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,7 +15,6 @@ import com.app.bharatnaai.data.session.SessionManager
 import com.app.bharatnaai.utils.Constants
 
 class SalonSearchAdapter(
-    private val onSalonClick: (Salon) -> Unit,
     private val onBookNowClick: (Salon) -> Unit
 ) : ListAdapter<Salon, SalonSearchAdapter.SalonViewHolder>(SalonDiffCallback()) {
 
@@ -72,10 +71,6 @@ class SalonSearchAdapter(
                     .placeholder(R.drawable.saloon_image)
                     .error(R.drawable.saloon_image)
                     .into(ivSalonImage)
-
-                btnBookNow.setOnClickListener {
-                    onSalonClick(salon)
-                }
 
                 btnBookNow.setOnClickListener {
                     onBookNowClick(salon)

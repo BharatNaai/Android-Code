@@ -45,8 +45,6 @@ class BookingHistoryFrag : Fragment() {
     }
 
     private fun setupUI() {
-        binding.ivBack.setOnClickListener { parentFragmentManager.popBackStack() }
-
         // default select Upcoming
         binding.toggleSegments.check(binding.btnUpcoming.id)
         updateToggleUI(binding.btnUpcoming.id)
