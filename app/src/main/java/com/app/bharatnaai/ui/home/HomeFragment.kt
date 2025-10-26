@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,7 +39,7 @@ class HomeFragment : Fragment() {
         val granted = (result[Manifest.permission.ACCESS_FINE_LOCATION] == true) ||
                 (result[Manifest.permission.ACCESS_COARSE_LOCATION] == true)
         if (granted) {
-            viewModel.fetchNearbySalonsByLocation()
+            viewModel.onLocationPermissionGranted()
         }
     }
 
@@ -57,11 +58,11 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        observeData()
         setupViews()
         setupRecyclerView()
         setupClickListeners()
         ensureLocationPermission()
-        observeData()
     }
 
     private fun setupViews() {
@@ -107,13 +108,26 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateUI(state: HomeState) {
-        // Handle loading states, errors, etc.
-        
+
+        // 🔹 CASE 1: Show ProgressBar only during initial load or location fetch
+        binding.progressBar.isVisible = (state.isLoading && state.isFirstLoad) || state.isLocationLoading
+
+        // 🔹 CASE 2: SwipeRefresh only for user-triggered reload
+        binding.swipeRefreshLayout.isRefreshing = state.isLoading && !state.isFirstLoad && !state.isLocationLoading
+
+        // 🔹 Handle error
         if (state.error != null) {
             Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
             viewModel.clearError()
         }
+
+        // 🔹 Show location name if available
+        if (state.currentLocation.isNotEmpty()) {
+            binding.tvLocationName.text = state.currentLocation
+        }
     }
+
+
 
     private fun navigateToSalonDetails(salon: Salon) {
         val fragment = SaloonDetailsFragment()
@@ -145,25 +159,6 @@ class HomeFragment : Fragment() {
         binding.tvViewAll.setOnClickListener {
             navigateToSearchFrag()
         }
-
-        // Note: Exclusive offers now handled by RecyclerView adapter
-
-        // Service clicks
-        binding.serviceHaircut.setOnClickListener {
-            Toast.makeText(context, "Haircut services - Coming soon!", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.serviceShaving.setOnClickListener {
-            Toast.makeText(context, "Shaving services - Coming soon!", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.serviceGrooming.setOnClickListener {
-            Toast.makeText(context, "Grooming services - Coming soon!", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.servicePackages.setOnClickListener {
-            Toast.makeText(context, "Package deals - Coming soon!", Toast.LENGTH_SHORT).show()
-        }
     }
 
     override fun onDestroyView() {
@@ -172,25 +167,23 @@ class HomeFragment : Fragment() {
     }
 
     private fun ensureLocationPermission() {
-        val fine = ActivityCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
-        val coarse = ActivityCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-        if (fine != PackageManager.PERMISSION_GRANTED && coarse != PackageManager.PERMISSION_GRANTED) {
+        val fine = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+        val coarse = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+
+        if (fine == PackageManager.PERMISSION_GRANTED || coarse == PackageManager.PERMISSION_GRANTED) {
+            if (viewModel.homeState.value?.hasLocationPermission != true) {
+                viewModel.onLocationPermissionGranted()
+            }
+        } else {
             locationPermissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 )
             )
-        } else {
-            viewModel.fetchNearbySalonsByLocation()
         }
     }
+
 
     private fun requestLocationPermission() {
         when {

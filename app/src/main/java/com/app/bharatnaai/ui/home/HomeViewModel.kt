@@ -15,6 +15,7 @@ import com.app.bharatnaai.utils.Constants
 
 data class HomeState(
     val isLoading: Boolean = false,
+    val isFirstLoad: Boolean = true,
     val error: String? = null,
     val currentLocation: String = "",
     val isLocationLoading: Boolean = false,
@@ -95,16 +96,21 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                         s.copy(imagePath = absolute)
                     }
                     _featuredSalons.value = withAbsoluteImages
-                    _homeState.value = _homeState.value?.copy(isLoading = false)
+                    _homeState.value = _homeState.value?.copy(
+                        isLoading = false,
+                        isFirstLoad = false
+                    )
                 } else {
                     _homeState.value = _homeState.value?.copy(
                         isLoading = false,
+                        isFirstLoad = false,
                         error = "Failed to load featured salons"
                     )
                 }
             } catch (e: Exception) {
                 _homeState.value = _homeState.value?.copy(
                     isLoading = false,
+                    isFirstLoad = false,
                     error = e.message ?: "Unknown error loading salons"
                 )
             }

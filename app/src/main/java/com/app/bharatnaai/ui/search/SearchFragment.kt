@@ -31,15 +31,6 @@ class SearchFragment : Fragment() {
 
     private val viewModel: SearchViewModel by viewModels()
     private lateinit var salonAdapter: SalonSearchAdapter
-    private val locationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { result ->
-        val granted = (result[Manifest.permission.ACCESS_FINE_LOCATION] == true) ||
-                (result[Manifest.permission.ACCESS_COARSE_LOCATION] == true)
-        if (granted) {
-            viewModel.fetchNearbySalonsByLocation()
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -129,11 +120,10 @@ class SearchFragment : Fragment() {
     private fun ensureLocationPermission() {
         val fine = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
         val coarse = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
-        if (fine != PackageManager.PERMISSION_GRANTED && coarse != PackageManager.PERMISSION_GRANTED) {
-            locationPermissionLauncher.launch(arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ))
+        if (fine == PackageManager.PERMISSION_GRANTED && coarse == PackageManager.PERMISSION_GRANTED) {
+           viewModel.fetchNearbySalonsByLocation()
+        } else {
+            Toast.makeText(requireContext(), "Check Location Permission", Toast.LENGTH_SHORT).show()
         }
     }
 

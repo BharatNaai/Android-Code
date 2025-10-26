@@ -113,31 +113,53 @@ class LocationHelper(private val context: Context) {
     /**
      * Get address from location coordinates
      */
-    suspend fun getAddressFromLocation(location: Location): AddressResult = suspendCancellableCoroutine { continuation ->
-        try {
-            if (Geocoder.isPresent()) {
-                geocoder.getFromLocation(location.latitude, location.longitude, 1) { addresses ->
-                    if (addresses.isNotEmpty()) {
-                        val address = addresses[0]
-                        val locationName = when {
-                            !address.locality.isNullOrEmpty() -> address.locality
-                            !address.subAdminArea.isNullOrEmpty() -> address.subAdminArea
-                            !address.adminArea.isNullOrEmpty() -> address.adminArea
-                            !address.countryName.isNullOrEmpty() -> address.countryName
-                            else -> "Unknown Location"
+    suspend fun getAddressFromLocation(location: Location): AddressResult =
+        suspendCancellableCoroutine { continuation ->
+            try {
+                if (Geocoder.isPresent()) {
+                    geocoder.getFromLocation(location.latitude, location.longitude, 1) { addresses ->
+                        if (addresses.isNotEmpty()) {
+                            val address = addresses[0]
+
+                            // Extract meaningful address components
+                            val thoroughfare = address.thoroughfare     // Street or road
+                            val subLocality = address.subLocality       // Sector or area
+                            val locality = address.locality             // City
+                            val adminArea = address.adminArea           // State
+
+                            // Try to get a readable "location name"
+                            val detailedLocation = listOfNotNull(
+                                thoroughfare,
+                                subLocality
+                            ).joinToString(", ")
+
+                            // Fallback if nothing detailed available
+                            val locationName = if (detailedLocation.isNotBlank()) {
+                                detailedLocation
+                            } else {
+                                // fallback to broader name hierarchy
+                                when {
+                                    !locality.isNullOrEmpty() -> locality
+                                    !address.subAdminArea.isNullOrEmpty() -> address.subAdminArea
+                                    !adminArea.isNullOrEmpty() -> adminArea
+                                    !address.countryName.isNullOrEmpty() -> address.countryName
+                                    else -> "Unknown Location"
+                                }
+                            }
+
+                            continuation.resume(AddressResult.Success(locationName, address))
+                        } else {
+                            continuation.resume(AddressResult.Error("No address found"))
                         }
-                        continuation.resume(AddressResult.Success(locationName, address))
-                    } else {
-                        continuation.resume(AddressResult.Error("No address found"))
                     }
+                } else {
+                    continuation.resume(AddressResult.Error("Geocoder not available"))
                 }
-            } else {
-                continuation.resume(AddressResult.Error("Geocoder not available"))
+            } catch (e: Exception) {
+                continuation.resume(AddressResult.Error("Error getting address: ${e.message}"))
             }
-        } catch (e: Exception) {
-            continuation.resume(AddressResult.Error("Error getting address: ${e.message}"))
         }
-    }
+
 
     /**
      * Get current location with address
