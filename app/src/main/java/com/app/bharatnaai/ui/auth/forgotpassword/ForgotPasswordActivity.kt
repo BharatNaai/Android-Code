@@ -140,7 +140,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
                         }
                         viewModel.setSelectedMethod(ResetMethod.EMAIL)
                         viewModel.setContact(email = email)
-                        sendPasswordResetEmail(email)
+                        viewModel.sendResetCode(ResetMethod.EMAIL, email)
                     } else {
                         val phoneRaw = binding.etPhone.text?.toString()?.trim().orEmpty()
                         val phone = normalizePhoneNumber(phoneRaw)
@@ -258,23 +258,6 @@ class ForgotPasswordActivity : AppCompatActivity() {
         )
     }
 
-    private fun sendPasswordResetEmail(email: String) {
-        binding.btnContinue.isEnabled = false
-        firebaseAuth.sendPasswordResetEmail(email)
-            .addOnCompleteListener { task ->
-                binding.btnContinue.isEnabled = true
-                if (task.isSuccessful) {
-                    Toast.makeText(this, "Password reset email sent", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(
-                        this,
-                        task.exception?.localizedMessage ?: "Something went wrong",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-    }
-
     private fun startPhoneNumberVerification(
         phoneNumber: String,
         token: PhoneAuthProvider.ForceResendingToken? = null
@@ -326,10 +309,8 @@ class ForgotPasswordActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Phone verified; in a real flow you might now allow password reset on server
                     Toast.makeText(this, "Phone verified", Toast.LENGTH_SHORT).show()
-                    // Optionally finish or proceed to reset password via backend if required
-                    viewModel.forgotPasswordState.value?.let {
-                        viewModel.sendResetCode(ResetMethod.SMS, it.email)
-                    }
+                    // Move to password reset step if your backend supports phone-based reset; otherwise finish.
+                    viewModel.goToVerifyOtpStep(ResetMethod.SMS)
                 } else {
                     Toast.makeText(
                         this,
