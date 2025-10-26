@@ -67,15 +67,18 @@ dependencies {
     //Security
     implementation ("androidx.security:security-crypto:1.1.0-alpha06")
 
-    //firebase
-    implementation("com.google.firebase:firebase-auth:23.0.0")
+    // Firebase (use BOM to manage versions)
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+    implementation("com.google.firebase:firebase-auth")
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
 
-    //google authentication
-    implementation ("com.google.firebase:firebase-bom:32.7.0") // Latest BOM
-    implementation ("com.google.android.gms:play-services-auth:21.0.0") // For Google Sign-In
+    // Google authentication
+    implementation ("com.google.android.gms:play-services-auth:21.2.0") // For Google Sign-In
+
+    // Coroutines support for Task.await()
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
     // Location Services
     implementation("com.google.android.gms:play-services-location:21.0.1")

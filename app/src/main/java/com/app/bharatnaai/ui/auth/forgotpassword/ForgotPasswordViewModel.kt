@@ -26,12 +26,13 @@ data class ForgotPasswordState(
     val selectedMethod: ResetMethod = ResetMethod.EMAIL,
     val currentStep: ForgotPasswordStep = ForgotPasswordStep.SELECT_METHOD,
     val email: String = "",
-    
+    val phone: String = "",
+
     // Field-specific errors
     val otpError: String? = null,
     val newPasswordError: String? = null,
     val confirmPasswordError: String? = null,
-    
+
     // Track which fields have been touched
     val otpTouched: Boolean = false,
     val newPasswordTouched: Boolean = false,
@@ -39,34 +40,60 @@ data class ForgotPasswordState(
 )
 
 class ForgotPasswordViewModel(application: Application) : AndroidViewModel(application) {
-    
+
     private val authRepository = AuthRepository(application.applicationContext)
-    
+
     // LiveData for UI state
     private val _forgotPasswordState = MutableLiveData<ForgotPasswordState>()
     val forgotPasswordState: LiveData<ForgotPasswordState> = _forgotPasswordState
-    
+
     // Form data
     private var otp: String = ""
     private var newPassword: String = ""
     private var confirmPassword: String = ""
-    
+    private var verificationId: String? = null
+
     init {
         _forgotPasswordState.value = ForgotPasswordState()
     }
-    
+
     fun setSelectedMethod(method: ResetMethod) {
         _forgotPasswordState.value = _forgotPasswordState.value?.copy(
             selectedMethod = method
         )
     }
-    
-    fun updateFormData(otp: String = this.otp, newPassword: String = this.newPassword, confirmPassword: String = this.confirmPassword) {
+
+    fun setContact(email: String? = null, phone: String? = null) {
+        val current = _forgotPasswordState.value ?: ForgotPasswordState()
+        _forgotPasswordState.value = current.copy(
+            email = email ?: current.email,
+            phone = phone ?: current.phone
+        )
+    }
+
+    fun onCodeSent(verificationId: String) {
+        this.verificationId = verificationId
+    }
+
+    fun goToVerifyOtpStep(method: ResetMethod) {
+        val current = _forgotPasswordState.value ?: ForgotPasswordState()
+        _forgotPasswordState.value = current.copy(
+            selectedMethod = method,
+            currentStep = ForgotPasswordStep.VERIFY_OTP,
+            error = null
+        )
+    }
+
+    fun updateFormData(
+        otp: String = this.otp,
+        newPassword: String = this.newPassword,
+        confirmPassword: String = this.confirmPassword
+    ) {
         this.otp = otp
         this.newPassword = newPassword
         this.confirmPassword = confirmPassword
     }
-    
+
     fun markFieldAsTouched(fieldName: String) {
         val currentState = _forgotPasswordState.value ?: ForgotPasswordState()
         _forgotPasswordState.value = when (fieldName) {
@@ -76,14 +103,14 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
             else -> currentState
         }
     }
-    
+
     fun sendResetCode(method: ResetMethod, email: String) {
         viewModelScope.launch {
             _forgotPasswordState.value = _forgotPasswordState.value?.copy(
                 isLoading = true,
                 error = null
             )
-            
+
             try {
                 when (val result = authRepository.forgetPassword(email)) {
                     is ApiResult.Success -> {
@@ -94,12 +121,14 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
                             email = email
                         )
                     }
+
                     is ApiResult.Error -> {
                         _forgotPasswordState.value = _forgotPasswordState.value?.copy(
                             isLoading = false,
                             error = result.message
                         )
                     }
+
                     is ApiResult.Loading -> {
                         // Handle loading state if needed
                     }
@@ -112,15 +141,15 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
             }
         }
     }
-    
+
     fun validateOtpForm(): Boolean {
         val currentState = _forgotPasswordState.value ?: ForgotPasswordState()
-        
+
         var isValid = true
         var otpError: String? = null
         var newPasswordError: String? = null
         var confirmPasswordError: String? = null
-        
+
         // Validate OTP
         if (otp.isBlank()) {
             if (currentState.otpTouched) {
@@ -133,7 +162,7 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
             }
             isValid = false
         }
-        
+
         // Validate new password
         if (newPassword.isBlank()) {
             if (currentState.newPasswordTouched) {
@@ -146,7 +175,7 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
             }
             isValid = false
         }
-        
+
         // Validate confirm password
         if (confirmPassword.isBlank()) {
             if (currentState.confirmPasswordTouched) {
@@ -159,16 +188,16 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
             }
             isValid = false
         }
-        
+
         _forgotPasswordState.value = currentState.copy(
             otpError = otpError,
             newPasswordError = newPasswordError,
             confirmPasswordError = confirmPasswordError
         )
-        
+
         return isValid
     }
-    
+
     fun validateFormForSubmission(): Boolean {
         // Mark all fields as touched and validate
         val currentState = _forgotPasswordState.value ?: ForgotPasswordState()
@@ -179,20 +208,21 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
         )
         return validateOtpForm()
     }
-    
+
     fun resetPassword() {
         if (!validateFormForSubmission()) return
-        
+
         viewModelScope.launch {
             _forgotPasswordState.value = _forgotPasswordState.value?.copy(
                 isLoading = true,
                 error = null
             )
-            
+
             try {
                 val currentState = _forgotPasswordState.value!!
-                
-                when (val result = authRepository.resetPassword(currentState.email, otp, newPassword)) {
+
+                when (val result =
+                    authRepository.resetPassword(currentState.email, otp, newPassword)) {
                     is ApiResult.Success -> {
                         _forgotPasswordState.value = _forgotPasswordState.value?.copy(
                             isLoading = false,
@@ -200,12 +230,14 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
                             currentStep = ForgotPasswordStep.RESET_COMPLETE
                         )
                     }
+
                     is ApiResult.Error -> {
                         _forgotPasswordState.value = _forgotPasswordState.value?.copy(
                             isLoading = false,
                             error = result.message
                         )
                     }
+
                     is ApiResult.Loading -> {
                         // Handle loading state if needed
                     }
@@ -218,7 +250,7 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
             }
         }
     }
-    
+
     fun clearError() {
         _forgotPasswordState.value = _forgotPasswordState.value?.copy(error = null)
     }
