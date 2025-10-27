@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        supportActionBar?.hide()
         setupNavigation()
         loadFragment(HomeFragment.newInstance())
         binding.bottomNavigation.selectedItemId = R.id.nav_home
