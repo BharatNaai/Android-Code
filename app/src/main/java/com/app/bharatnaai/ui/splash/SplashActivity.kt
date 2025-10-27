@@ -17,10 +17,7 @@ class SplashActivity : AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
-        // Hide action bar for full screen experience
         supportActionBar?.hide()
-        
-        // Subtle loading effect
         binding.progressBar.alpha = 0.5f
         
         // Always navigate to Main to allow exploration.
