@@ -1,6 +1,7 @@
 package com.app.bharatnaai.utils
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Address
@@ -9,6 +10,7 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Looper
 import androidx.core.app.ActivityCompat
+import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.*
@@ -26,6 +28,8 @@ class LocationHelper(private val context: Context) {
 
     companion object {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+        const val LOCATION_ENABLE_REQUEST_CODE = 1002
+
         val REQUIRED_PERMISSIONS = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
@@ -33,7 +37,7 @@ class LocationHelper(private val context: Context) {
     }
 
     /**
-     * Check if location permissions are granted
+     * ✅ Check if location permissions are granted
      */
     fun hasLocationPermissions(): Boolean {
         return REQUIRED_PERMISSIONS.all { permission ->
@@ -42,7 +46,7 @@ class LocationHelper(private val context: Context) {
     }
 
     /**
-     * Check if location services are enabled
+     * ✅ Check if location services (GPS/Network) are enabled
      */
     fun isLocationEnabled(): Boolean {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -51,7 +55,36 @@ class LocationHelper(private val context: Context) {
     }
 
     /**
-     * Get current location using FusedLocationProviderClient
+     * ✅ Prompt the user to enable location services if they are OFF
+     * Uses Google's LocationSettingsRequest
+     */
+    suspend fun checkAndPromptEnableLocation(activity: Activity): LocationSettingsResult =
+        suspendCancellableCoroutine { continuation ->
+            val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
+                .build()
+
+            val builder = LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest)
+                .setAlwaysShow(true)
+
+            val client = LocationServices.getSettingsClient(activity)
+            val task = client.checkLocationSettings(builder.build())
+
+            task.addOnSuccessListener {
+                continuation.resume(LocationSettingsResult.Enabled)
+            }
+
+            task.addOnFailureListener { exception ->
+                if (exception is ResolvableApiException) {
+                    continuation.resume(LocationSettingsResult.ResolutionRequired(exception))
+                } else {
+                    continuation.resume(LocationSettingsResult.Error("Unable to enable location settings"))
+                }
+            }
+        }
+
+    /**
+     * ✅ Get current location using FusedLocationProviderClient
      */
     suspend fun getCurrentLocation(): LocationResult = suspendCancellableCoroutine { continuation ->
         if (!hasLocationPermissions()) {
@@ -98,7 +131,6 @@ class LocationHelper(private val context: Context) {
                 }
             }
 
-            // Set up cancellation
             continuation.invokeOnCancellation {
                 fusedLocationClient.removeLocationUpdates(locationCallback)
             }
@@ -111,7 +143,7 @@ class LocationHelper(private val context: Context) {
     }
 
     /**
-     * Get address from location coordinates
+     * ✅ Convert latitude & longitude → Address string
      */
     suspend fun getAddressFromLocation(location: Location): AddressResult =
         suspendCancellableCoroutine { continuation ->
@@ -120,24 +152,19 @@ class LocationHelper(private val context: Context) {
                     geocoder.getFromLocation(location.latitude, location.longitude, 1) { addresses ->
                         if (addresses.isNotEmpty()) {
                             val address = addresses[0]
+                            val thoroughfare = address.thoroughfare
+                            val subLocality = address.subLocality
+                            val locality = address.locality
+                            val adminArea = address.adminArea
 
-                            // Extract meaningful address components
-                            val thoroughfare = address.thoroughfare     // Street or road
-                            val subLocality = address.subLocality       // Sector or area
-                            val locality = address.locality             // City
-                            val adminArea = address.adminArea           // State
-
-                            // Try to get a readable "location name"
                             val detailedLocation = listOfNotNull(
                                 thoroughfare,
                                 subLocality
                             ).joinToString(", ")
 
-                            // Fallback if nothing detailed available
                             val locationName = if (detailedLocation.isNotBlank()) {
                                 detailedLocation
                             } else {
-                                // fallback to broader name hierarchy
                                 when {
                                     !locality.isNullOrEmpty() -> locality
                                     !address.subAdminArea.isNullOrEmpty() -> address.subAdminArea
@@ -160,9 +187,8 @@ class LocationHelper(private val context: Context) {
             }
         }
 
-
     /**
-     * Get current location with address
+     * ✅ Combine location + address in one call
      */
     suspend fun getCurrentLocationWithAddress(): LocationWithAddressResult {
         return when (val locationResult = getCurrentLocation()) {
@@ -188,7 +214,7 @@ class LocationHelper(private val context: Context) {
 }
 
 /**
- * Sealed classes for different result types
+ * ✅ Result classes for different outcomes
  */
 sealed class LocationResult {
     data class Success(val location: Location) : LocationResult()
@@ -207,4 +233,10 @@ sealed class LocationWithAddressResult {
         val address: Address
     ) : LocationWithAddressResult()
     data class Error(val message: String) : LocationWithAddressResult()
+}
+
+sealed class LocationSettingsResult {
+    object Enabled : LocationSettingsResult()
+    data class ResolutionRequired(val exception: ResolvableApiException) : LocationSettingsResult()
+    data class Error(val message: String) : LocationSettingsResult()
 }

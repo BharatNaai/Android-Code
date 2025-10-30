@@ -13,6 +13,9 @@ import bharatnaai.databinding.FragmentSaloonDetailsBinding
 import com.app.bharatnaai.data.model.Barber
 import com.app.bharatnaai.ui.barber_details.BarberDetailsFragment
 import com.app.bharatnaai.utils.CommonMethod
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 
 class SaloonDetailsFragment : Fragment() {
     private var _binding: FragmentSaloonDetailsBinding? = null
@@ -45,6 +48,13 @@ class SaloonDetailsFragment : Fragment() {
         val salonId = arguments?.getInt("salonId")
         if (salonId != null) {
             viewModel.loadSalon(salonId)
+        }
+
+        val initialTop = binding.topBar.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(binding.topBar) { v, insets ->
+            val status = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.updatePadding(top = initialTop + status.top)
+            insets
         }
     }
 

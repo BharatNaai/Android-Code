@@ -9,6 +9,9 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import bharatnaai.databinding.FragmentNotificationsBinding
 import com.app.bharatnaai.data.model.NotificationItem
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 
 class NotificationFragment : Fragment() {
 
@@ -37,6 +40,13 @@ class NotificationFragment : Fragment() {
         setupUI()
         setupRecyclerView()
         observeViewModel()
+
+        val initialTop = binding.headerContainer.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(binding.headerContainer) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.updatePadding(top = initialTop + systemBars.top)
+            insets
+        }
     }
 
     private fun setupUI() {

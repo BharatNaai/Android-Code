@@ -14,6 +14,9 @@ import bharatnaai.databinding.FragmentUserProfileBinding
 import com.app.bharatnaai.utils.PreferenceManager
 import com.app.bharatnaai.ui.my_booking.BookingHistoryFrag
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 
 class UserProfileFragment : Fragment() {
 
@@ -43,6 +46,13 @@ class UserProfileFragment : Fragment() {
         setupViews()
         observeData()
         setupClickListeners()
+
+        val initialTop = binding.topBar.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(binding.topBar) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.updatePadding(top = initialTop + systemBars.top)
+            insets
+        }
     }
 
     private fun setupViews() {

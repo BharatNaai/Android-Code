@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import bharatnaai.R
 import bharatnaai.databinding.FragmentBookingHistoryBinding
 import com.app.bharatnaai.utils.PreferenceManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 
 class BookingHistoryFrag : Fragment() {
 
@@ -41,6 +44,13 @@ class BookingHistoryFrag : Fragment() {
         // Fetch bookings for current user
         PreferenceManager.getUserId(requireContext())?.let { uid ->
             viewModel.fetch(uid)
+        }
+
+        val initialTop = binding.topBar.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(binding.topBar) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.updatePadding(top = initialTop + systemBars.top)
+            insets
         }
     }
 

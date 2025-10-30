@@ -23,6 +23,9 @@ import com.app.bharatnaai.ui.saloon_details.SaloonDetailsFragment
 import bharatnaai.R
 import bharatnaai.databinding.FragmentSearchBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 
 class SearchFragment : Fragment() {
 
@@ -49,6 +52,14 @@ class SearchFragment : Fragment() {
         setupClickListeners()
         ensureLocationPermission()
         observeData()
+
+        // Apply status bar insets to toolbar
+        val initialTop = binding.toolbarContainer.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbarContainer) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.updatePadding(top = initialTop + systemBars.top)
+            insets
+        }
     }
 
     private fun setupViews() {

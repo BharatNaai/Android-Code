@@ -1,6 +1,7 @@
 package com.app.bharatnaai.ui.search
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,6 +14,8 @@ import com.app.bharatnaai.utils.LocationHelper
 import com.app.bharatnaai.utils.LocationResult
 import kotlinx.coroutines.launch
 import com.app.bharatnaai.utils.Constants
+import com.app.bharatnaai.utils.LocationSettingsResult
+import com.app.bharatnaai.utils.LocationWithAddressResult
 
 /**
  * SearchViewModel
@@ -68,17 +71,29 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
         _searchState.value = _searchState.value?.copy(isLoading = true)
 
         viewModelScope.launch {
-            when (val locationResult = locationHelper.getCurrentLocation()) {
-                is LocationResult.Success -> {
-                    val lat = locationResult.location.latitude
-                    val lng = locationResult.location.longitude
-                    fetchNearbySalons(lat, lng)
+            when (val settingsResult = locationHelper.checkAndPromptEnableLocation(getApplication())) {
+                is LocationSettingsResult.Enabled -> {
+                    when (val result = locationHelper.getCurrentLocationWithAddress()) {
+                        is LocationWithAddressResult.Success -> {
+                            Log.d("Location", "Lat: ${result.location.latitude}, Lon: ${result.location.longitude}")
+                            Log.d("Address", "📍 ${result.locationName}")
+                        }
+                        is LocationWithAddressResult.Error -> {
+                            Log.e("Error", result.message)
+                        }
+                    }
                 }
-                is LocationResult.Error -> {
-                    _searchState.value = _searchState.value?.copy(
-                        isLoading = false,
-                        error = locationResult.message
-                    )
+
+                is LocationSettingsResult.ResolutionRequired -> {
+                    try {
+                        settingsResult.exception.startResolutionForResult(getApplication(), LocationHelper.LOCATION_ENABLE_REQUEST_CODE)
+                    } catch (e: Exception) {
+                        Log.e("Location", "Error showing enable dialog: ${e.message}")
+                    }
+                }
+
+                is LocationSettingsResult.Error -> {
+                    Log.e("Location", settingsResult.message)
                 }
             }
         }

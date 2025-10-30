@@ -25,6 +25,9 @@ import com.app.bharatnaai.ui.notifications.NotificationFragment
 import com.app.bharatnaai.ui.saloon_details.SaloonDetailsFragment
 import com.app.bharatnaai.utils.LocationHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 
 class HomeFragment : Fragment() {
 
@@ -63,6 +66,13 @@ class HomeFragment : Fragment() {
         setupRecyclerView()
         setupClickListeners()
         ensureLocationPermission()
+
+        val initialTop = binding.headerContainer.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(binding.headerContainer) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.updatePadding(top = initialTop + systemBars.top)
+            insets
+        }
     }
 
     private fun setupViews() {

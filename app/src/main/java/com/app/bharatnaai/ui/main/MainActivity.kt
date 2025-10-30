@@ -13,6 +13,11 @@ import bharatnaai.R
 import bharatnaai.databinding.ActivityMainBinding
 import com.app.bharatnaai.data.repository.ApiResult
 import com.app.bharatnaai.ui.my_booking.BookingHistoryFrag
+import android.graphics.Color
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +28,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        supportActionBar?.hide()
+        // Enable edge-to-edge so we can manage insets ourselves
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        // Make system bars transparent for seamless look
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
+
+        // Apply bottom inset to BottomNavigationView only on devices that need it (gesture nav)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNavigation) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(bottom = systemBars.bottom)
+            insets
+        }
 
         setupNavigation()
         loadFragment(HomeFragment.newInstance())

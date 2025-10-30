@@ -1,6 +1,7 @@
 package com.app.bharatnaai.ui.home
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,6 +13,7 @@ import com.app.bharatnaai.utils.LocationHelper
 import com.app.bharatnaai.utils.LocationWithAddressResult
 import kotlinx.coroutines.launch
 import com.app.bharatnaai.utils.Constants
+import com.app.bharatnaai.utils.LocationSettingsResult
 
 data class HomeState(
     val isLoading: Boolean = false,
@@ -54,27 +56,33 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _homeState.value = _homeState.value?.copy(isLocationLoading = true)
 
         viewModelScope.launch {
-            when (val result = locationHelper.getCurrentLocationWithAddress()) {
-                is LocationWithAddressResult.Success -> {
-                    val lat = result.location.latitude
-                    val lng = result.location.longitude
-                    // Update readable location in state
-                    _homeState.value = _homeState.value?.copy(
-                        currentLocation = result.locationName,
-                        isLocationLoading = false,
-                        error = null
-                    )
-                    // Fetch salons for featured section
-                    fetchFeaturedSalons(lat, lng)
+            when (val settingsResult = locationHelper.checkAndPromptEnableLocation(getApplication())) {
+                is LocationSettingsResult.Enabled -> {
+                    when (val result = locationHelper.getCurrentLocationWithAddress()) {
+                        is LocationWithAddressResult.Success -> {
+                            Log.d("Location", "Lat: ${result.location.latitude}, Lon: ${result.location.longitude}")
+                            Log.d("Address", "📍 ${result.locationName}")
+                        }
+                        is LocationWithAddressResult.Error -> {
+                            Log.e("Error", result.message)
+                        }
+                    }
                 }
-                is LocationWithAddressResult.Error -> {
-                    _homeState.value = _homeState.value?.copy(
-                        isLocationLoading = false,
-                        error = result.message
-                    )
+
+                is LocationSettingsResult.ResolutionRequired -> {
+                    try {
+                        settingsResult.exception.startResolutionForResult(getApplication(), LocationHelper.LOCATION_ENABLE_REQUEST_CODE)
+                    } catch (e: Exception) {
+                        Log.e("Location", "Error showing enable dialog: ${e.message}")
+                    }
+                }
+
+                is LocationSettingsResult.Error -> {
+                    Log.e("Location", settingsResult.message)
                 }
             }
         }
+
     }
 
     private fun fetchFeaturedSalons(lat: Double, lng: Double) {

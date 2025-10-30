@@ -19,6 +19,9 @@ import bharatnaai.databinding.FragmentEditProfileBinding
 import com.app.bharatnaai.data.model.EditProfileState
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 
 class EditProfileFragment : Fragment() {
 
@@ -61,6 +64,14 @@ class EditProfileFragment : Fragment() {
         
         // Load user profile data
         viewModel.loadUserProfile(requireContext())
+
+        // Apply status bar inset to the root container so top elements clear the status bar
+        val initialTop = binding.root.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.updatePadding(top = initialTop + systemBars.top)
+            insets
+        }
     }
 
     private fun setupUI() {

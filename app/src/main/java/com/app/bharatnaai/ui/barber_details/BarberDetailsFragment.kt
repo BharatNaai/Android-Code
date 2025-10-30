@@ -20,6 +20,9 @@ import android.content.Intent
 import com.app.bharatnaai.data.session.SessionManager
 import com.app.bharatnaai.ui.auth.login.LoginActivity
 import com.app.bharatnaai.utils.PreferenceManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 
 class BarberDetailsFragment : Fragment() {
 
@@ -66,6 +69,21 @@ class BarberDetailsFragment : Fragment() {
             currentApiDate = apiDate
             binding.tvDate.text = todayDisplayDate()
             viewModel.fetchSlots(barberId, apiDate, selectedService ?: "")
+        }
+
+        val initialTop = binding.topBar.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(binding.topBar) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.updatePadding(top = initialTop + systemBars.top)
+            insets
+        }
+
+        // Ensure bottom CTA is above navigation bar when using gesture nav
+        val initialBottom = binding.btnBook.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.btnBook) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            v.updatePadding(bottom = initialBottom + systemBars.bottom)
+            insets
         }
 
         binding.llPromo.setOnClickListener {
