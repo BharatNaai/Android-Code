@@ -19,6 +19,6 @@
         android:text="08:00 AM"
         android:paddingHorizontal="@dimen/margin_8dp"
         android:textColor="@color/primary_text_color"
-        android:textSize="@dimen/text_size_16sp" />
+        android:textSize="@dimen/text_size_12sp" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -22,7 +22,7 @@ data class SaloonDetailsState(
     val hours: String = "Mon-Fri: 9 AM - 7 PM, Sat: 10 AM - 6 PM",
     val selectedService: Service? = null,
     val totalAmountText: String = "$120.00",
-    val saloonImage : String = ""
+    val saloonImage : String? = null
 )
 
 class SaloonDetailsViewModel(application: Application) : AndroidViewModel(application) {

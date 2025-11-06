@@ -10,7 +10,7 @@ data class Salon(
     val salonId: Int,
     val salonName: String,
     val address: String?, // nullable
-    val imagePath: String,
+    val imagePath: String?, // nullable - can be null from API
     val latitude: Double,
     val longitude: Double,
     val barbers: List<Barber>,

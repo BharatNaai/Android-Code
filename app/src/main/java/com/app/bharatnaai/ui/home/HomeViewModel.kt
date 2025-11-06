@@ -1,7 +1,6 @@
 package com.app.bharatnaai.ui.home
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,7 +12,6 @@ import com.app.bharatnaai.utils.LocationHelper
 import com.app.bharatnaai.utils.LocationWithAddressResult
 import kotlinx.coroutines.launch
 import com.app.bharatnaai.utils.Constants
-import com.app.bharatnaai.utils.LocationSettingsResult
 
 data class HomeState(
     val isLoading: Boolean = false,
@@ -56,36 +54,32 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _homeState.value = _homeState.value?.copy(isLocationLoading = true)
 
         viewModelScope.launch {
-            when (val settingsResult = locationHelper.checkAndPromptEnableLocation(getApplication())) {
-                is LocationSettingsResult.Enabled -> {
-                    when (val result = locationHelper.getCurrentLocationWithAddress()) {
-                        is LocationWithAddressResult.Success -> {
-                            Log.d("Location", "Lat: ${result.location.latitude}, Lon: ${result.location.longitude}")
-                            Log.d("Address", "📍 ${result.locationName}")
-                        }
-                        is LocationWithAddressResult.Error -> {
-                            Log.e("Error", result.message)
-                        }
-                    }
+            when (val result = locationHelper.getCurrentLocationWithAddress()) {
+                is LocationWithAddressResult.Success -> {
+                    val lat = result.location.latitude
+                    val lng = result.location.longitude
+                    // Update readable location in state
+                    _homeState.value = _homeState.value?.copy(
+                        currentLocation = result.locationName,
+                        isLocationLoading = false,
+                        error = null
+                    )
+                    // Fetch salons for featured section
+                   fetchFeaturedSalons(lat, lng)
                 }
 
-                is LocationSettingsResult.ResolutionRequired -> {
-                    try {
-                        settingsResult.exception.startResolutionForResult(getApplication(), LocationHelper.LOCATION_ENABLE_REQUEST_CODE)
-                    } catch (e: Exception) {
-                        Log.e("Location", "Error showing enable dialog: ${e.message}")
-                    }
-                }
-
-                is LocationSettingsResult.Error -> {
-                    Log.e("Location", settingsResult.message)
+                is LocationWithAddressResult.Error -> {
+                    _homeState.value = _homeState.value?.copy(
+                        isLocationLoading = false,
+                        error = result.message
+                    )
                 }
             }
         }
-
     }
 
-    private fun fetchFeaturedSalons(lat: Double, lng: Double) {
+
+     fun fetchFeaturedSalons(lat: Double, lng: Double) {
         // Optionally set loading state if needed
         _homeState.value = _homeState.value?.copy(isLoading = true)
 
@@ -96,11 +90,13 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
                 if (response.isSuccessful && body != null) {
                     val withAbsoluteImages = body.map { s ->
-                        val raw = s.imagePath.trim()
-                        // If the string accidentally contains multiple URLs separated by whitespace, take the last token
-                        val tokenized = raw.split(Regex("\\s+")).lastOrNull()?.trim().orEmpty()
-                        val absolute = if (tokenized.startsWith("http", ignoreCase = true)) tokenized
-                        else Constants.BASE_URL.trim().trimEnd('/') + "/" + tokenized.trimStart('/')
+                        val absolute = s.imagePath?.let { path ->
+                            val raw = path.trim()
+                            // If the string accidentally contains multiple URLs separated by whitespace, take the last token
+                            val tokenized = raw.split(Regex("\\s+")).lastOrNull()?.trim().orEmpty()
+                            if (tokenized.startsWith("http", ignoreCase = true)) tokenized
+                            else Constants.BASE_URL.trim().trimEnd('/') + "/" + tokenized.trimStart('/')
+                        }
                         s.copy(imagePath = absolute)
                     }
                     _featuredSalons.value = withAbsoluteImages

@@ -69,4 +69,6 @@
     <string name="haircut_25">Haircut • $25</string>
     <string name="book_available_slots">Book Available Slots</string>
     <string name="reschedule">RESCHEDULE</string>
+    <string name="confirm_booking">Confirm Booking</string>
+    <string name="book_appointment">Book Appointment</string>
 </resources>

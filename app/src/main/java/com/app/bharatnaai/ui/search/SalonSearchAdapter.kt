@@ -7,16 +7,15 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import bharatnaai.R
 import bharatnaai.databinding.ItemSalonSearchBinding
-import com.bumptech.glide.Glide
 import com.app.bharatnaai.data.model.Salon
-import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.model.LazyHeaders
-import com.app.bharatnaai.data.session.SessionManager
-import com.app.bharatnaai.utils.Constants
+import com.app.bharatnaai.utils.CommonMethod
+import com.bumptech.glide.Glide
 
 class SalonSearchAdapter(
     private val onBookNowClick: (Salon) -> Unit
 ) : ListAdapter<Salon, SalonSearchAdapter.SalonViewHolder>(SalonDiffCallback()) {
+
+    private val commonMethod = CommonMethod()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SalonViewHolder {
         val binding = ItemSalonSearchBinding.inflate(
@@ -41,36 +40,15 @@ class SalonSearchAdapter(
 //                tvRating.text = salon.rating.toString()
                 val distanceText = String.format("%.2f km", salon.distance ?: 0.0)
                 tvDistance.text = distanceText
+                val salonImage = salon.imagePath?.trim()
 
-                val salonImage = salon.imagePath.trim()
-                // If backend accidentally concatenated multiple URLs separated by whitespace, take the last token
-                val tokenized = salonImage.split(Regex("\\s+")).lastOrNull()?.trim().orEmpty()
-                val token = SessionManager.getInstance(ivSalonImage.context).getAccessToken()
-
-                // Build absolute URL for relative paths
-                val effectiveUrl = if (!tokenized.startsWith("http", true)) {
-                    Constants.BASE_URL.trim().trimEnd('/') + "/" + tokenized.trimStart('/')
+                if (salonImage.isNullOrEmpty()) {
+                    Glide.with(ivSalonImage.context)
+                        .load(R.drawable.saloon_image)
+                        .into(ivSalonImage)
                 } else {
-                    tokenized
+                    commonMethod.loadImage(binding.ivSalonImage, salon.imagePath)
                 }
-
-                // Attach Authorization header for protected http(s) URLs
-                val glideModel: Any = if (effectiveUrl.startsWith("http", true) && token != null) {
-                    GlideUrl(
-                        effectiveUrl,
-                        LazyHeaders.Builder()
-                            .addHeader("Authorization", "Bearer $token")
-                            .build()
-                    )
-                } else {
-                    effectiveUrl
-                }
-
-                Glide.with(ivSalonImage.context)
-                    .load(glideModel)
-                    .placeholder(R.drawable.saloon_image)
-                    .error(R.drawable.saloon_image)
-                    .into(ivSalonImage)
 
                 btnBookNow.setOnClickListener {
                     onBookNowClick(salon)

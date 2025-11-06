@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
-        android:paddingTop="80dp"
+        android:paddingTop="32dp"
         android:paddingBottom="32dp">
 
         <!-- Welcome Back Title -->

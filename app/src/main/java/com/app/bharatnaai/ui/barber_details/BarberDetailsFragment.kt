@@ -78,14 +78,6 @@ class BarberDetailsFragment : Fragment() {
             insets
         }
 
-        // Ensure bottom CTA is above navigation bar when using gesture nav
-        val initialBottom = binding.btnBook.paddingBottom
-        ViewCompat.setOnApplyWindowInsetsListener(binding.btnBook) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            v.updatePadding(bottom = initialBottom + systemBars.bottom)
-            insets
-        }
-
         binding.llPromo.setOnClickListener {
             // Toggle promo as a demo; replace with input bottom sheet later
             val current = viewModel.state.value?.promoCode

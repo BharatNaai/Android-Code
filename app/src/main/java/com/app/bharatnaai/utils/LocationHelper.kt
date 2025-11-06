@@ -8,11 +8,14 @@ import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
+import android.os.Build
 import android.os.Looper
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.coroutines.resume
 
@@ -144,48 +147,82 @@ class LocationHelper(private val context: Context) {
 
     /**
      * ✅ Convert latitude & longitude → Address string
+     * Supports both old and new Android APIs for backward compatibility
      */
-    suspend fun getAddressFromLocation(location: Location): AddressResult =
-        suspendCancellableCoroutine { continuation ->
-            try {
-                if (Geocoder.isPresent()) {
-                    geocoder.getFromLocation(location.latitude, location.longitude, 1) { addresses ->
-                        if (addresses.isNotEmpty()) {
-                            val address = addresses[0]
-                            val thoroughfare = address.thoroughfare
-                            val subLocality = address.subLocality
-                            val locality = address.locality
-                            val adminArea = address.adminArea
+    suspend fun getAddressFromLocation(location: Location): AddressResult {
+        return try {
+            if (!Geocoder.isPresent()) {
+                return AddressResult.Error("Geocoder not available")
+            }
 
-                            val detailedLocation = listOfNotNull(
-                                thoroughfare,
-                                subLocality
-                            ).joinToString(", ")
-
-                            val locationName = if (detailedLocation.isNotBlank()) {
-                                detailedLocation
+            // For Android 13+ (API 33+), use the new async API with GeocodeListener
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                suspendCancellableCoroutine { continuation ->
+                    try {
+                        geocoder.getFromLocation(location.latitude, location.longitude, 1) { addresses ->
+                            if (addresses.isNotEmpty()) {
+                                val address = addresses[0]
+                                val locationName = extractLocationName(address)
+                                continuation.resume(AddressResult.Success(locationName, address))
                             } else {
-                                when {
-                                    !locality.isNullOrEmpty() -> locality
-                                    !address.subAdminArea.isNullOrEmpty() -> address.subAdminArea
-                                    !adminArea.isNullOrEmpty() -> adminArea
-                                    !address.countryName.isNullOrEmpty() -> address.countryName
-                                    else -> "Unknown Location"
-                                }
+                                continuation.resume(AddressResult.Error("No address found"))
                             }
-
-                            continuation.resume(AddressResult.Success(locationName, address))
-                        } else {
-                            continuation.resume(AddressResult.Error("No address found"))
                         }
+                    } catch (e: Exception) {
+                        continuation.resume(AddressResult.Error("Error getting address: ${e.message}"))
                     }
-                } else {
-                    continuation.resume(AddressResult.Error("Geocoder not available"))
                 }
-            } catch (e: Exception) {
-                continuation.resume(AddressResult.Error("Error getting address: ${e.message}"))
+            } else {
+                // For older Android versions, use the synchronous API (deprecated but still works)
+                // Run on IO dispatcher to avoid blocking the main thread
+                withContext(Dispatchers.IO) {
+                    try {
+                        @Suppress("DEPRECATION")
+                        val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                        
+                        if (!addresses.isNullOrEmpty()) {
+                            val address = addresses[0]
+                            val locationName = extractLocationName(address)
+                            AddressResult.Success(locationName, address)
+                        } else {
+                            AddressResult.Error("No address found")
+                        }
+                    } catch (e: Exception) {
+                        AddressResult.Error("Error getting address: ${e.message}")
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            AddressResult.Error("Error getting address: ${e.message}")
+        }
+    }
+
+    /**
+     * Helper method to extract a readable location name from an Address object
+     */
+    private fun extractLocationName(address: Address): String {
+        val thoroughfare = address.thoroughfare
+        val subLocality = address.subLocality
+        val locality = address.locality
+        val adminArea = address.adminArea
+
+        val detailedLocation = listOfNotNull(
+            thoroughfare,
+            subLocality
+        ).joinToString(", ")
+
+        return if (detailedLocation.isNotBlank()) {
+            detailedLocation
+        } else {
+            when {
+                !locality.isNullOrEmpty() -> locality
+                !address.subAdminArea.isNullOrEmpty() -> address.subAdminArea
+                !adminArea.isNullOrEmpty() -> adminArea
+                !address.countryName.isNullOrEmpty() -> address.countryName
+                else -> "Unknown Location"
             }
         }
+    }
 
     /**
      * ✅ Combine location + address in one call

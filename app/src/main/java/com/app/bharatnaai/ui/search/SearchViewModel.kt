@@ -1,7 +1,6 @@
 package com.app.bharatnaai.ui.search
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,8 +13,6 @@ import com.app.bharatnaai.utils.LocationHelper
 import com.app.bharatnaai.utils.LocationResult
 import kotlinx.coroutines.launch
 import com.app.bharatnaai.utils.Constants
-import com.app.bharatnaai.utils.LocationSettingsResult
-import com.app.bharatnaai.utils.LocationWithAddressResult
 
 /**
  * SearchViewModel
@@ -65,35 +62,21 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
         refreshFilteredList()
     }
 
-
-
     fun fetchNearbySalonsByLocation() {
         _searchState.value = _searchState.value?.copy(isLoading = true)
 
         viewModelScope.launch {
-            when (val settingsResult = locationHelper.checkAndPromptEnableLocation(getApplication())) {
-                is LocationSettingsResult.Enabled -> {
-                    when (val result = locationHelper.getCurrentLocationWithAddress()) {
-                        is LocationWithAddressResult.Success -> {
-                            Log.d("Location", "Lat: ${result.location.latitude}, Lon: ${result.location.longitude}")
-                            Log.d("Address", "📍 ${result.locationName}")
-                        }
-                        is LocationWithAddressResult.Error -> {
-                            Log.e("Error", result.message)
-                        }
-                    }
+            when (val locationResult = locationHelper.getCurrentLocation()) {
+                is LocationResult.Success -> {
+                    val lat = locationResult.location.latitude
+                    val lng = locationResult.location.longitude
+                    fetchNearbySalons(lat, lng)
                 }
-
-                is LocationSettingsResult.ResolutionRequired -> {
-                    try {
-                        settingsResult.exception.startResolutionForResult(getApplication(), LocationHelper.LOCATION_ENABLE_REQUEST_CODE)
-                    } catch (e: Exception) {
-                        Log.e("Location", "Error showing enable dialog: ${e.message}")
-                    }
-                }
-
-                is LocationSettingsResult.Error -> {
-                    Log.e("Location", settingsResult.message)
+                is LocationResult.Error -> {
+                    _searchState.value = _searchState.value?.copy(
+                        isLoading = false,
+                        error = locationResult.message
+                    )
                 }
             }
         }
@@ -109,8 +92,10 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
 
                 if (response.isSuccessful && body != null) {
                     val salons: List<Salon> = body.map { s ->
-                        val absolute = if (s.imagePath.startsWith("http", ignoreCase = true)) s.imagePath
-                        else Constants.BASE_URL.trim().trimEnd('/') + "/" + s.imagePath.trimStart('/')
+                        val absolute = s.imagePath?.let { path ->
+                            if (path.startsWith("http", ignoreCase = true)) path
+                            else Constants.BASE_URL.trim().trimEnd('/') + "/" + path.trimStart('/')
+                        }
                         s.copy(imagePath = absolute)
                     }
                     _searchState.value = _searchState.value?.copy(
