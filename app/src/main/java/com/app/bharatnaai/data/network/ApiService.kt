@@ -17,6 +17,9 @@ import com.app.bharatnaai.data.model.Salon
 import com.app.bharatnaai.data.model.TokenRefreshRequest
 import com.app.bharatnaai.data.model.TokenRefreshResponse
 import com.app.bharatnaai.data.model.SlotBookingRequest
+import com.app.bharatnaai.data.model.notificationRequest
+import com.app.bharatnaai.data.model.notificationResponse
+import okhttp3.Request
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -84,4 +87,9 @@ interface ApiService {
     suspend fun getBookingDetails(
         @Query("userId") userId: Long
     ) : Response<List<BookingDetails>>
+
+    @POST("barbers/push-notification")
+    suspend fun getFirebaseNotification(
+        @Body request: notificationRequest
+    ):Response<notificationResponse>
 }

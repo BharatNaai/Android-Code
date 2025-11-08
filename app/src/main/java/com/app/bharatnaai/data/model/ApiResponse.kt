@@ -108,3 +108,8 @@ data class BookingDetails(
     val endTime: String,
     val status: String
 )
+
+data class notificationResponse(
+    val message: String,
+    val success: Boolean
+)

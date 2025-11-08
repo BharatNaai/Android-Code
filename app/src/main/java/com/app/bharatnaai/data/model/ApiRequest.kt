@@ -50,3 +50,10 @@ data class SlotBookingRequest(
     @SerializedName("slotIds")
     val slotIds : List<Int>
 )
+
+data class notificationRequest(
+    @SerializedName("fcmToken")
+    val fcmToken: String,
+    @SerializedName("message")
+    val message: String
+)
