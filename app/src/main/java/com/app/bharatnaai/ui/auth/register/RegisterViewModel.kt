@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.app.bharatnaai.data.model.RegisterRequest
 import com.app.bharatnaai.data.repository.ApiResult
 import com.app.bharatnaai.data.repository.AuthRepository
+import com.app.bharatnaai.data.repository.NotificationRepository
+import com.app.bharatnaai.utils.PreferenceManager
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(application: Application) : AndroidViewModel(application) {
@@ -158,6 +160,15 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
                         isLoading = false,
                         isSuccess = true
                     )
+
+                    // Notify this device (for test/confirmation)
+                    val token = PreferenceManager.getFcmToken(getApplication())
+                    if (!token.isNullOrBlank()) {
+                        runCatching {
+                            val repo = NotificationRepository(getApplication())
+                            repo.sendPushNotification(token, "Welcome to BharatNaai! Registration successful")
+                        }
+                    }
                 }
                 is ApiResult.Error -> {
                     _registerState.value = _registerState.value?.copy(

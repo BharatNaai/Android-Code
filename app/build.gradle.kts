@@ -69,6 +69,7 @@ dependencies {
     // Firebase (use BOM to manage versions)
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-messaging")
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)

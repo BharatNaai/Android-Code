@@ -10,6 +10,7 @@ object PreferenceManager {
     private const val USER_EMAIL = "user_email"
     private const val USER_PHONE = "user_phone"
     private const val USER_ID = "user_id"
+    private const val FCM_TOKEN = "fcm_token"
 
     private fun getPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -49,4 +50,11 @@ object PreferenceManager {
     fun clearAll(context: Context) {
         getPreferences(context).edit().clear().apply()
     }
+
+    fun saveFcmToken(context: Context, token: String) {
+        getPreferences(context).edit().putString(FCM_TOKEN, token).apply()
+    }
+
+    fun getFcmToken(context: Context): String? =
+        getPreferences(context).getString(FCM_TOKEN, null)
 }

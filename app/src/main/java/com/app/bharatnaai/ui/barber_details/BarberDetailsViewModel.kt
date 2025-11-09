@@ -10,6 +10,8 @@ import com.app.bharatnaai.data.model.BookingSlot
 import com.app.bharatnaai.data.network.ApiClient
 import com.app.bharatnaai.data.repository.BarberSlotsRepository
 import com.app.bharatnaai.data.model.Slot
+import com.app.bharatnaai.data.repository.NotificationRepository
+import com.app.bharatnaai.utils.PreferenceManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -95,6 +97,18 @@ class BarberDetailsViewModel(app: Application) : AndroidViewModel(app) {
                 val result = slotsRepo.bookSlot(customerId, slotIds)
                 _bookingResult.value = result
                 _state.value = _state.value?.copy(isLoading = false)
+
+                // Notify this device about booking result (for confirmation)
+                if (result != null && result.success) {
+                    val token = PreferenceManager.getFcmToken(getApplication())
+                    if (!token.isNullOrBlank()) {
+                        runCatching {
+                            val repo = NotificationRepository(getApplication())
+                            val msg = result.message.ifBlank { "Your booking is confirmed." }
+                            repo.sendPushNotification(token, msg)
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 _bookingError.value = e.message ?: "Failed to book slot"
                 _state.value = _state.value?.copy(isLoading = false)

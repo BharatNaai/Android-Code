@@ -8,6 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.app.bharatnaai.data.repository.ApiResult
 import com.app.bharatnaai.data.repository.AuthRepository
+import com.app.bharatnaai.data.repository.NotificationRepository
+import com.app.bharatnaai.utils.PreferenceManager
 import kotlinx.coroutines.launch
 
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
@@ -105,6 +107,15 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                         isLoading = false,
                         isSuccess = true
                     )
+
+                    // Fire a push notification (optional) to this device for confirmation/testing
+                    val token = PreferenceManager.getFcmToken(getApplication())
+                    if (!token.isNullOrBlank()) {
+                        runCatching {
+                            val repo = NotificationRepository(getApplication())
+                            repo.sendPushNotification(token, "Login successful")
+                        }
+                    }
                 }
                 is ApiResult.Error -> {
                     _loginState.value = _loginState.value?.copy(

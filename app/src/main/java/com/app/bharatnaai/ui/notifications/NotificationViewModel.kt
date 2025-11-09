@@ -24,19 +24,15 @@ class NotificationViewModel : ViewModel() {
     val isEmpty: LiveData<Boolean> = _isEmpty
 
     init {
-        loadNotifications()
+        // Keep empty by default; Fragment can supply repository data
+        _notificationSections.value = emptyList()
+        _isEmpty.value = true
     }
 
-    private fun loadNotifications() {
+    fun setNotifications(notifications: List<NotificationItem>) {
         viewModelScope.launch {
             _isLoading.value = true
-            
-            // Simulate API call delay
-            kotlinx.coroutines.delay(500)
-            
-            val notifications = getMockNotifications()
             val sections = groupNotificationsByDate(notifications)
-            
             _notificationSections.value = sections
             _isEmpty.value = sections.isEmpty() || sections.all { it.notifications.isEmpty() }
             _isLoading.value = false
@@ -169,6 +165,6 @@ class NotificationViewModel : ViewModel() {
     }
 
     fun refreshNotifications() {
-        loadNotifications()
+        // No-op by default; Fragment can reload from repository and call setNotifications
     }
 }
