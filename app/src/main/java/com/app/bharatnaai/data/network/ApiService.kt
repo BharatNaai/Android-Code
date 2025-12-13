@@ -73,7 +73,7 @@ interface ApiService {
 
     @GET("barbers/{barberId}/slots")
     suspend fun getAvailableSlots(
-        @Path("barberId") barberId: Int,
+        @Path("barberId") barberId: String,
         @Query("date") date: String,
         @Query("serviceType") serviceType: String
     ): Response<BarberSlotsAvailableResponseRaw>

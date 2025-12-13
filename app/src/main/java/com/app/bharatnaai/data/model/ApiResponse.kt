@@ -64,7 +64,7 @@ data class BarberSlotsAvailableResponse(
     @SerializedName("totalSlots") val totalSlots: Int,
     @SerializedName("slots") val slots: List<Slot>,
     @SerializedName("success") val success: Boolean,
-    @SerializedName("barberId") val barberId: Int? = null,
+    @SerializedName("barberId") val barberId: String? = null,
     @SerializedName("serviceType") val serviceType: String? = null,
     @SerializedName("date") val date: String? = null
 )
@@ -74,7 +74,7 @@ data class BarberSlotsAvailableResponseRaw(
     @SerializedName("totalSlots") val totalSlots: Int,
     @SerializedName("slots") val slots: List<JsonObject>,
     @SerializedName("success") val success: Boolean,
-    @SerializedName("barberId") val barberId: Int? = null,
+    @SerializedName("barberId") val barberId: String? = null,
     @SerializedName("serviceType") val serviceType: String? = null,
     @SerializedName("date") val date: String? = null
 )

@@ -15,7 +15,7 @@ class BarberSlotsRepository(
 ) {
     private val commonMethod = CommonMethod()
 
-    suspend fun getAvailableSlots(barberId: Int, date: String, serviceType: String): BarberSlotsAvailableResponse? {
+    suspend fun getAvailableSlots(barberId: String, date: String, serviceType: String): BarberSlotsAvailableResponse? {
         if (!commonMethod.isInternetAvailable(context)) {
             throw Exception("No internet connection")
         }

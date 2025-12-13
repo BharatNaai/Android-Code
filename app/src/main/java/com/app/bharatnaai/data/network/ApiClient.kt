@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
     
-    private var authInterceptor: AuthInterceptor? = null
+    private var authInterceptor: AuthInterceptor ?= null
     
     private val loggingInterceptor by lazy {
         HttpLoggingInterceptor().apply {

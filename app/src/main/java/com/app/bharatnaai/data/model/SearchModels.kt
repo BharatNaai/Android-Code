@@ -21,7 +21,7 @@ data class Salon(
 )
 
 data class Barber(
-    val barberId: Int,
+    val barberId: String,
     val barberName: String,
     val phone: String,
     val email: String

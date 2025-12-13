@@ -4,6 +4,7 @@ data class RegisterState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val error: String? = null,
+    val successMessage: String? = null,
     val isFormValid: Boolean = false,
     
     // Field-specific errors

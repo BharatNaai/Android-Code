@@ -32,7 +32,7 @@ class BarberDetailsFragment : Fragment() {
 
     private lateinit var timeSlotsAdapter: TimeSlotsAdapter
     private var selectedService: String? = null
-    private var currentBarberId: Int? = null
+    private var currentBarberId: String? = null
     private var currentApiDate: String = ""
 
     override fun onCreateView(
@@ -57,7 +57,7 @@ class BarberDetailsFragment : Fragment() {
         observeViewModel()
 
         // Read barberId and set default date -> fetch slots
-        val barberId = arguments?.getInt("barberId")
+        val barberId = arguments?.getString("barberId")
         val barberName = arguments?.getString("barberName")
         if (!barberName.isNullOrBlank()) {
             binding.tvBarberName.text = barberName
@@ -162,7 +162,7 @@ class BarberDetailsFragment : Fragment() {
         target.background = drawable
     }
 
-    private fun setupDatePicker(barberId: Int?) {
+    private fun setupDatePicker(barberId: String?) {
         binding.tvDate.setOnClickListener {
             val cal = Calendar.getInstance()
             val dlg = DatePickerDialog(
