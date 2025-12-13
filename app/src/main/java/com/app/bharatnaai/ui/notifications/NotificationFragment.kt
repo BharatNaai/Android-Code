@@ -12,13 +12,16 @@ import com.app.bharatnaai.data.model.NotificationItem
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import android.widget.Toast
 
 class NotificationFragment : Fragment() {
 
     private var _binding: FragmentNotificationsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: NotificationViewModel by viewModels()
+    private val viewModel: NotificationViewModel by viewModels {
+        androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
+    }
     private lateinit var notificationAdapter: NotificationAdapter
 
     companion object {
@@ -80,6 +83,13 @@ class NotificationFragment : Fragment() {
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             // You can add loading indicator here if needed
             // For now, we'll keep it simple
+        }
+
+        viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                viewModel.onToastShown()
+            }
         }
     }
 
