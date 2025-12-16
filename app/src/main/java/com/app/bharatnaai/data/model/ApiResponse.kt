@@ -113,3 +113,10 @@ data class notificationResponse(
     val message: String,
     val success: Boolean
 )
+
+data class RegisterDeviceResponse(
+    @SerializedName("success")
+    val success: Boolean,
+    @SerializedName("message")
+    val message: String
+)

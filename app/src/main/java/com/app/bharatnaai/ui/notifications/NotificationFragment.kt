@@ -94,9 +94,7 @@ class NotificationFragment : Fragment() {
     }
 
     private fun onNotificationClick(notification: NotificationItem) {
-        // Mark notification as read
-        viewModel.markNotificationAsRead(notification.id)
-        
+
         // Handle navigation based on notification type or actionData
         // For now, we'll just show a simple response
         // You can extend this to navigate to specific screens

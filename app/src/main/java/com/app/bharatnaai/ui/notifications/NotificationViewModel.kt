@@ -30,23 +30,6 @@ class NotificationViewModel(application: Application) : AndroidViewModel(applica
 
     private val repository = NotificationRepository(application.applicationContext)
 
-    init {
-        loadNotifications()
-    }
-
-    fun loadNotifications() {
-        viewModelScope.launch {
-            _isLoading.value = true
-            val notifications = repository.getInAppNotifications()
-            val sections = groupNotificationsByDate(notifications)
-            
-            _notificationSections.value = sections
-            _isEmpty.value = sections.isEmpty() || sections.all { it.notifications.isEmpty() }
-            _isLoading.value = false
-        }
-    }
-
-    // Removed mock notifications; data now loads from local storage populated by FCM or app events
 
     private fun groupNotificationsByDate(notifications: List<NotificationItem>): List<NotificationSection> {
         val calendar = Calendar.getInstance()
@@ -89,13 +72,6 @@ class NotificationViewModel(application: Application) : AndroidViewModel(applica
             }
         }
     }
-
-    fun markNotificationAsRead(notificationId: String) {
-        repository.markInAppNotificationRead(notificationId)
-        loadNotifications()
-    }
-
-    fun refreshNotifications() { loadNotifications() }
 
     fun sendPushNotification(fcmToken: String, message: String) {
         viewModelScope.launch {

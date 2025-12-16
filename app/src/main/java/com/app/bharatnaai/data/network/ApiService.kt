@@ -9,6 +9,8 @@ import com.app.bharatnaai.data.model.ForgetPasswordRequest
 import com.app.bharatnaai.data.model.ForgetPasswordResponse
 import com.app.bharatnaai.data.model.LoginRequest
 import com.app.bharatnaai.data.model.LoginResponse
+import com.app.bharatnaai.data.model.RegisterDeviceRequest
+import com.app.bharatnaai.data.model.RegisterDeviceResponse
 import com.app.bharatnaai.data.model.RegisterRequest
 import com.app.bharatnaai.data.model.RegisterResponse
 import com.app.bharatnaai.data.model.ResetPasswordRequest
@@ -92,4 +94,9 @@ interface ApiService {
     suspend fun getFirebaseNotification(
         @Body request: notificationRequest
     ):Response<notificationResponse>
+
+    @POST("barbers/register-device")
+    suspend fun registerDevice(
+        @Body request: RegisterDeviceRequest
+    ):Response<RegisterDeviceResponse>
 }

@@ -3,27 +3,36 @@ package com.app.bharatnaai.services
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import bharatnaai.R
 import com.app.bharatnaai.data.model.NotificationItem
 import com.app.bharatnaai.data.model.NotificationType
-import com.app.bharatnaai.data.repository.NotificationRepository
+import com.app.bharatnaai.ui.home.HomeFragment
+import com.app.bharatnaai.utils.PreferenceManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import java.util.Date
-import java.util.Random
+import kotlin.random.Random
 
 class BNFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        // send token to backend if needed
+        PreferenceManager.saveToken(applicationContext, token)
+        // Trigger registration via WorkManager or EventBus since service can't access ViewModel
+        WorkManager.getInstance(applicationContext).enqueue(OneTimeWorkRequestBuilder<TokenSyncWorker>()
+            .setInputData(workDataOf("token" to token)).build())
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
@@ -41,9 +50,9 @@ class BNFirebaseMessagingService : FirebaseMessagingService() {
         val type = runCatching { NotificationType.valueOf(typeStr) }
             .getOrDefault(NotificationType.GENERAL)
 
-        showSystemNotification(title, body)
-
-        val repo = NotificationRepository(applicationContext)
+        if (!AppState.isInForeground) {
+            showSystemNotification(title, body, typeStr)
+        }
         val item = NotificationItem(
             id = System.currentTimeMillis().toString(),
             type = type,
@@ -54,10 +63,9 @@ class BNFirebaseMessagingService : FirebaseMessagingService() {
             iconResource = R.drawable.ic_bell_notification,
             actionData = null
         )
-        repo.addInAppNotification(item)
     }
 
-    private fun showSystemNotification(title: String, body: String) {
+    private fun showSystemNotification(title: String, body: String, typeStr: String) {
         val channelId = "bn_default_channel"
         createChannelIfNeeded(channelId)
 
@@ -74,12 +82,27 @@ class BNFirebaseMessagingService : FirebaseMessagingService() {
             }
         }
 
+        // 🔹 Intent to open app when notification is tapped
+        val intent = Intent(this, HomeFragment::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+            putExtra("type", typeStr)
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
         val builder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_bell_notification)
             .setContentTitle(title)
             .setContentText(body)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
 
         NotificationManagerCompat.from(this)
             .notify(Random.nextInt(), builder.build())
@@ -103,4 +126,7 @@ class BNFirebaseMessagingService : FirebaseMessagingService() {
             notificationManager.createNotificationChannel(channel)
         }
     }
+}
+object AppState {
+    var isInForeground = false
 }

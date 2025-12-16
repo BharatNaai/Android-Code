@@ -6,7 +6,6 @@ import com.app.bharatnaai.data.model.notificationResponse
 import com.app.bharatnaai.data.model.NotificationItem
 import com.app.bharatnaai.data.network.ApiClient
 import com.app.bharatnaai.data.network.ApiService
-import com.app.bharatnaai.utils.NotificationStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
@@ -20,16 +19,4 @@ class NotificationRepository(
         withContext(Dispatchers.IO) {
             api.getFirebaseNotification(notificationRequest(fcmToken, message))
         }
-
-    fun getInAppNotifications(): List<NotificationItem> =
-        NotificationStorage.getNotifications(context)
-
-    fun saveInAppNotifications(list: List<NotificationItem>) =
-        NotificationStorage.saveNotifications(context, list)
-
-    fun addInAppNotification(item: NotificationItem) =
-        NotificationStorage.addNotification(context, item)
-
-    fun markInAppNotificationRead(id: String) =
-        NotificationStorage.markAsRead(context, id)
 }

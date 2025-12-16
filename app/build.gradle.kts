@@ -85,6 +85,8 @@ dependencies {
 
     // Image Loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.24")
 
     // Testing
     testImplementation(libs.junit)

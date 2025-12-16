@@ -12,6 +12,8 @@ import com.app.bharatnaai.data.model.ResetPasswordRequest
 import com.app.bharatnaai.data.model.ResetPasswordResponse
 import com.app.bharatnaai.data.model.TokenRefreshRequest
 import com.app.bharatnaai.data.model.TokenRefreshResponse
+import com.app.bharatnaai.data.model.RegisterDeviceRequest
+import com.app.bharatnaai.data.model.RegisterDeviceResponse
 import com.app.bharatnaai.data.network.ApiClient
 import com.app.bharatnaai.data.session.SessionManager
 import com.app.bharatnaai.utils.CommonMethod
@@ -38,6 +40,23 @@ class AuthRepository(private val context: Context) {
             }
         } catch (e: Exception) {
             ApiResult.Error(e.message ?: "Registration failed")
+        }
+    }
+
+    suspend fun registerDevice(deviceId: String, fcmToken: String): ApiResult<RegisterDeviceResponse> {
+        if (!commonMethod.isInternetAvailable(context)) {
+            return ApiResult.Error("No internet connection")
+        }
+        return try {
+            val request = RegisterDeviceRequest(deviceId = deviceId, fcmToken = fcmToken)
+            val response = apiService.registerDevice(request)
+            if (response.isSuccessful) {
+                response.body()?.let { ApiResult.Success(it) } ?: ApiResult.Error("Empty response from server")
+            } else {
+                ApiResult.Error("Device registration failed: ${response.code()} ${response.message()}")
+            }
+        } catch (e: Exception) {
+            ApiResult.Error(e.message ?: "Device registration failed")
         }
     }
 

@@ -57,3 +57,11 @@ data class notificationRequest(
     @SerializedName("message")
     val message: String
 )
+
+data class RegisterDeviceRequest(
+    @SerializedName("deviceId")
+    val deviceId: String,
+    @SerializedName("fcmToken")
+    val fcmToken: String
+)
+
