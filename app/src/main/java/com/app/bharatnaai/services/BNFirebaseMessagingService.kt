@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -29,6 +30,7 @@ class BNFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+        Log.d("FCM_TEST", "New token: $token")
         PreferenceManager.saveToken(applicationContext, token)
         // Trigger registration via WorkManager or EventBus since service can't access ViewModel
         WorkManager.getInstance(applicationContext).enqueue(OneTimeWorkRequestBuilder<TokenSyncWorker>()

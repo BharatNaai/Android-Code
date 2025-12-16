@@ -2,6 +2,7 @@ package com.app.bharatnaai.services
 
 import android.content.Context
 import android.provider.Settings
+import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.app.bharatnaai.data.repository.ApiResult
@@ -14,6 +15,7 @@ class TokenSyncWorker(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
+        Log.d("FCM_TEST", "TokenSyncWorker running")
         val ctx = applicationContext
         val token = inputData.getString("token") ?: PreferenceManager.getToken(ctx)
         if (token.isNullOrBlank()) {
