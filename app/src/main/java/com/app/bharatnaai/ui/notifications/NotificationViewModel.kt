@@ -5,10 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import bharatnaai.R
 import com.app.bharatnaai.data.model.NotificationItem
 import com.app.bharatnaai.data.model.NotificationSection
-import com.app.bharatnaai.data.model.NotificationType
 import com.app.bharatnaai.data.repository.NotificationRepository
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -79,7 +77,7 @@ class NotificationViewModel(application: Application) : AndroidViewModel(applica
             try {
                 val response = repository.sendPushNotification(fcmToken, message)
                 if (response.isSuccessful) {
-                    _toastMessage.value = response.body()?.message ?: "Notification sent"
+                    _toastMessage.value = "Notification sent"
                 } else {
                     _toastMessage.value = response.errorBody()?.string() ?: "Failed to send notification"
                 }
