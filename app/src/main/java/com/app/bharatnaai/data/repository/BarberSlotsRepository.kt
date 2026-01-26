@@ -17,7 +17,7 @@ class BarberSlotsRepository(
 
     suspend fun getAvailableSlots(barberId: String, date: String, serviceType: String): BarberSlotsAvailableResponse? {
         if (!commonMethod.isInternetAvailable(context)) {
-            throw Exception("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
         val response = apiService.getAvailableSlots(barberId, date, serviceType)
         if (!response.isSuccessful) return null
@@ -79,7 +79,7 @@ class BarberSlotsRepository(
 
     suspend fun bookSlot(customerId: Long, slotIds: List<Int>): BookingSlot? {
         if (!commonMethod.isInternetAvailable(context)) {
-            throw Exception("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
         val response = apiService.bookSlot(
             SlotBookingRequest(

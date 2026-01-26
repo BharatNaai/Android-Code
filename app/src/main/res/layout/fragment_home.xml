@@ -50,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif"
                     android:text="Location"
-                    android:textColor="#999999"
+                    android:textColor="@color/white"
                     android:textSize="12sp" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -133,7 +133,8 @@
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:padding="2dp"
-                android:src="@drawable/ic_night_mode" />
+                android:src="@drawable/ic_night_mode"
+                android:visibility="gone"/>
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <!-- Search Container -->

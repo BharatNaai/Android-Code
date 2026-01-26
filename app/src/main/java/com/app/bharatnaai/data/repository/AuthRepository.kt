@@ -27,7 +27,7 @@ class AuthRepository(private val context: Context) {
 
     suspend fun registerUser(user: RegisterRequest): ApiResult<RegisterResponse> {
         if (!commonMethod.isInternetAvailable(context)) {
-            return ApiResult.Error("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
         return try {
             val response = apiService.registerUser(user)
@@ -45,7 +45,7 @@ class AuthRepository(private val context: Context) {
 
     suspend fun registerDevice(deviceId: String, fcmToken: String): ApiResult<RegisterDeviceResponse> {
         if (!commonMethod.isInternetAvailable(context)) {
-            return ApiResult.Error("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
         return try {
             val request = RegisterDeviceRequest(deviceId = deviceId, fcmToken = fcmToken)
@@ -62,7 +62,7 @@ class AuthRepository(private val context: Context) {
 
     suspend fun loginUser(email: String, password: String): ApiResult<LoginResponse> {
         if (!commonMethod.isInternetAvailable(context)) {
-            return ApiResult.Error("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
         return try {
             val loginRequest = LoginRequest(email = email, password = password)
@@ -90,7 +90,7 @@ class AuthRepository(private val context: Context) {
 
     suspend fun refreshToken(): ApiResult<TokenRefreshResponse> {
         if (!commonMethod.isInternetAvailable(context)) {
-            return ApiResult.Error("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
         return try {
             val refreshToken = sessionManager.getRefreshToken()
@@ -113,7 +113,7 @@ class AuthRepository(private val context: Context) {
 
     suspend fun forgetPassword(email: String): ApiResult<ForgetPasswordResponse>{
         if (!commonMethod.isInternetAvailable(context)) {
-            return ApiResult.Error("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
         return try{
             val forgetpasswordRequest = ForgetPasswordRequest(email = email)
@@ -136,7 +136,7 @@ class AuthRepository(private val context: Context) {
 
     suspend fun resetPassword(email: String, otp: String, password: String): ApiResult<ResetPasswordResponse> {
         if (!commonMethod.isInternetAvailable(context)) {
-            return ApiResult.Error("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
         return try {
             val resetPasswordRequest = ResetPasswordRequest(

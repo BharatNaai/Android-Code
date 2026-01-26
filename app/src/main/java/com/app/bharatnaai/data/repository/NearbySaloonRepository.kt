@@ -12,7 +12,7 @@ class NearbySaloonRepository(private val context: Context) {
 
     suspend fun getNearbySaloonDetails(lat : Double, lng: Double): Response<List<Salon>> {
         if (!commonMethod.isInternetAvailable(context)) {
-            throw Exception("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
         return apiService.getNearbySaloonDetails(lat, lng)
     }

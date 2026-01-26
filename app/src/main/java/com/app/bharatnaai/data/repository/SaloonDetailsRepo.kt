@@ -13,7 +13,7 @@ class SaloonDetailsRepo(
 
     suspend fun fetchSalonDetails(salonId: Int): Salon? {
         if (!commonMethod.isInternetAvailable(context)) {
-            throw Exception("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
         val response = apiService.getSalonDetails(salonId)
         return if (response.isSuccessful) response.body() else null

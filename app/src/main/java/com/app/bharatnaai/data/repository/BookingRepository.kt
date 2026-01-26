@@ -13,7 +13,7 @@ class BookingRepository(
 
     suspend fun getBookingDetails(userId: Long): List<BookingDetails> {
         if (!commonMethod.isInternetAvailable(context)) {
-            throw Exception("No internet connection")
+           commonMethod.noInternetDialog(context)
         }
         val resp = apiService.getBookingDetails(userId)
         if (!resp.isSuccessful) throw Exception("Failed to load bookings")

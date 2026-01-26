@@ -1,48 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Default Colors -->
+    <!-- Primary Brand Colors -->
+    <color name="primary">#FFA726</color>
+    <color name="on_primary">#000000</color>
+    <color name="primary_container">#FFDDB3</color>
+    <color name="on_primary_container">#2B1700</color>
+    <color name="primary_dark">#FF8F00</color>
+
+    <!-- Secondary Brand Colors -->
+    <color name="secondary">#E65100</color>
+    <color name="on_secondary">#FFFFFF</color>
+    <color name="secondary_container">#FFCCBC</color>
+    <color name="on_secondary_container">#330E00</color>
+
+    <!-- Tertiary Brand Colors (Optional but good for M3) -->
+    <color name="tertiary">#FF9800</color>
+    <color name="on_tertiary">#000000</color>
+    <color name="tertiary_container">#FFE0B2</color>
+    <color name="on_tertiary_container">#2B1900</color>
+
+    <!-- Background & Surface -->
+    <color name="background">#FDF8F3</color>
+    <color name="on_background">#FDF8F3</color>
+    <color name="surface">#FDF8F3</color>
+    <color name="on_surface">#1C1B1F</color>
+    <color name="surface_variant">#EFDFD0</color>
+    <color name="on_surface_variant">#4F4539</color>
+    
+    <!-- Outline -->
+    <color name="outline">#817567</color>
+
+    <!-- Error -->
+    <color name="error">#BA1A1A</color>
+    <color name="on_error">#FFFFFF</color>
+    <color name="error_container">#FFDAD6</color>
+    <color name="on_error_container">#410002</color>
+
+    <!-- Splash Screen -->
+    <color name="splash_background">#FDF8F3</color>
+
+    <!-- ===================================================================================
+         LEGACY COMPATIBILITY LAYER
+         These are the original color names used throughout the app layouts/drawables.
+         They are mapped to the new Material 3 colors or defined explicitly for Light Mode.
+         =================================================================================== -->
+         
+    <!-- Basic Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#0DA913</color>
-    <color name="top_bar_background">#1C1C1C</color>
+    <color name="top_bar_background">@color/surface</color> <!-- Was #1C1C1C, now Surface (Light) -->
 
-    <!-- BharatNaai Brand Colors -->
-    <color name="primary_color">#FFA726</color> <!-- Orange/Golden -->
-    <color name="primary_dark">#FF8F00</color>
-    <color name="accent_color">#FFA726</color>
+    <!-- Brand Colors (Legacy Mappings) -->
+    <color name="primary_color">@color/primary</color>
+    <color name="accent_color">@color/primary</color>
 
-    <!-- Background Colors -->
-    <color name="splash_background">#221C10</color> <!-- Very Dark Background -->
-    <color name="background_light">#FFFFFF</color>
-    <color name="background_dark">#121212</color>
-    <color name="surface_color">#1E1E1E</color>
-
-    <!-- Text Colors -->
-    <color name="primary_text_color">#FFFFFF</color>
-    <color name="secondary_text_color">#9E9E9E</color>
-    <color name="text_on_primary">#000000</color>
-    <color name="hint_text_color">#BFB7B7</color>
-
+    <!-- Background Colors (Legacy Mappings) -->
+    <color name="background_light">@color/background</color>
+    <color name="background_dark">@color/on_background</color> <!-- Dark background color in Light mode context -->
+    <color name="surface_color">@color/surface</color>
+    
+    <!-- Text Colors (Legacy Mappings) -->
+    <color name="primary_text_color">@color/on_background</color> <!-- Black text on Light BG -->
+    <color name="secondary_text_color">@color/on_surface_variant</color>
+    <color name="text_on_primary">@color/on_primary</color>
+    
     <!-- Logo Colors -->
     <color name="logo_background">#FFA726</color>
     <color name="logo_icon_color">#2C2C2C</color>
 
     <!-- Status Colors -->
     <color name="success_color">#4CAF50</color>
-    <color name="error_color">#F44336</color>
-    <color name="warning_color">#FF9800</color>
+    <color name="error_color">@color/error</color>
+    <color name="warning_color">#FFA000</color>
 
-    <!-- Additional UI Colors -->
+    <!-- Specific UI Elements -->
     <color name="divider_color">#E0E0E0</color>
     <color name="card_background">#FFFFFF</color>
     <color name="button_disabled">#CCCCCC</color>
+    <color name="hint_text_color">#757575</color>
+    
+    <!-- Input Field -->
+    <color name="input_background">#F0F0F0</color>
+    <color name="social_button_background">#F0F0F0</color>
 
-    <!-- Input Field Colors -->
-    <color name="input_background">#2D3748</color> <!-- Dark Blue Gray -->
-    <color name="social_button_background">#2D3748</color>
-
-    <!-- Button Colors -->
+    <!-- Buttons -->
     <color name="button_primary_start">#FFB74D</color>
     <color name="button_primary_end">#FF9800</color>
-    <color name="notification_background">#3D2914</color>
+    <color name="notification_background">#FFF3E0</color> <!-- Lighter for Light Mode -->
+
 </resources>
