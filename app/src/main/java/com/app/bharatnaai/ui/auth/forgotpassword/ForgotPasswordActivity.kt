@@ -1,5 +1,6 @@
 package com.app.bharatnaai.ui.auth.forgotpassword
 
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,6 +8,10 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import bharatnaai.R
 import bharatnaai.databinding.ActivityForgotPasswordBinding
 import com.google.firebase.FirebaseException
@@ -29,6 +34,20 @@ class ForgotPasswordActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityForgotPasswordBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Edge-to-edge for modern devices
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
+
+        // Apply insets to the root so it clears status and navigation bars appropriately
+        val initialTop = binding.root.paddingTop
+        val initialBottom = binding.root.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(top = initialTop + systemBars.top, bottom = initialBottom + systemBars.bottom)
+            insets
+        }
         firebaseAuth = FirebaseAuth.getInstance()
         initPhoneVerificationCallbacks()
 
