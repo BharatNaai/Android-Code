@@ -14,6 +14,8 @@ import bharatnaai.databinding.ActivityMainBinding
 import com.app.bharatnaai.data.repository.ApiResult
 import com.app.bharatnaai.ui.my_booking.BookingHistoryFrag
 import android.graphics.Color
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -26,9 +28,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Restore App Theme properly
-        val sharedPref = getSharedPreferences("AppPreferences", android.content.Context.MODE_PRIVATE)
-        val savedMode = sharedPref.getInt("DayNightMode", androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(savedMode)
+        val sharedPref = getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        val savedMode = sharedPref.getInt("DayNightMode", MODE_NIGHT_FOLLOW_SYSTEM)
+        AppCompatDelegate.setDefaultNightMode(savedMode)
 
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)

@@ -35,7 +35,7 @@
 
         <!-- Status Bar -->
         <item name="android:statusBarColor">?attr/colorSurface</item>
-        <item name="android:windowLightStatusBar">true</item> <!-- For light mode, dark icons. Will need override for dark mode if strictly needed, or let DayNight handle it (invokes values-night if we rely on platform) -->
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="Theme.Bharatnaai" parent="Base.Theme.Bharatnaai" />

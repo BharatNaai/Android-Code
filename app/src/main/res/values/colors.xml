@@ -1,92 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Brand Colors -->
-    <color name="primary">#FFA726</color>
-    <color name="on_primary">#000000</color>
-    <color name="primary_container">#FFDDB3</color>
-    <color name="on_primary_container">#2B1700</color>
+    <!-- Primary Brand Colors (Dark Mode Palette applied globally) -->
+    <color name="primary">#FFB74D</color> <!-- Lighter Orange -->
+    <color name="on_primary">#432600</color>
+    <color name="primary_container">#603900</color>
+    <color name="on_primary_container">#FFDDB3</color>
     <color name="primary_dark">#FF8F00</color>
 
     <!-- Secondary Brand Colors -->
-    <color name="secondary">#E65100</color>
-    <color name="on_secondary">#FFFFFF</color>
-    <color name="secondary_container">#FFCCBC</color>
-    <color name="on_secondary_container">#330E00</color>
+    <color name="secondary">#FFCC80</color>
+    <color name="on_secondary">#4A2800</color>
+    <color name="secondary_container">#6D3C00</color>
+    <color name="on_secondary_container">#FFCCBC</color>
 
-    <!-- Tertiary Brand Colors (Optional but good for M3) -->
-    <color name="tertiary">#FF9800</color>
-    <color name="on_tertiary">#000000</color>
-    <color name="tertiary_container">#FFE0B2</color>
-    <color name="on_tertiary_container">#2B1900</color>
+    <!-- Tertiary Brand Colors -->
+    <color name="tertiary">#FFB74D</color>
+    <color name="on_tertiary">#4A2800</color>
+    <color name="tertiary_container">#653900</color>
+    <color name="on_tertiary_container">#FFE0B2</color>
 
     <!-- Background & Surface -->
-    <color name="background">#FDF8F3</color>
-    <color name="on_background">#FDF8F3</color>
-    <color name="surface">#FDF8F3</color>
-    <color name="on_surface">#1C1B1F</color>
-    <color name="surface_variant">#EFDFD0</color>
-    <color name="on_surface_variant">#4F4539</color>
+    <color name="background">#121212</color>
+    <color name="on_background">#E6E1E5</color>
+    <color name="surface">#121212</color>
+    <color name="on_surface">#E6E1E5</color>
+    <color name="surface_variant">#4F4539</color>
+    <color name="on_surface_variant">#D3C4B4</color>
     
     <!-- Outline -->
-    <color name="outline">#817567</color>
+    <color name="outline">#9C8F80</color>
 
     <!-- Error -->
-    <color name="error">#BA1A1A</color>
-    <color name="on_error">#FFFFFF</color>
-    <color name="error_container">#FFDAD6</color>
-    <color name="on_error_container">#410002</color>
+    <color name="error">#FFB4AB</color>
+    <color name="on_error">#690005</color>
+    <color name="error_container">#93000A</color>
+    <color name="on_error_container">#FFDAD6</color>
 
     <!-- Splash Screen -->
-    <color name="splash_background">#FDF8F3</color>
+    <color name="splash_background">#231B10</color>
 
-    <!-- ===================================================================================
-         LEGACY COMPATIBILITY LAYER
-         These are the original color names used throughout the app layouts/drawables.
-         They are mapped to the new Material 3 colors or defined explicitly for Light Mode.
-         =================================================================================== -->
-         
     <!-- Basic Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="static_white">#FFFFFF</color>
     <color name="green">#0DA913</color>
-    <color name="top_bar_background">@color/surface</color> <!-- Was #1C1C1C, now Surface (Light) -->
+    <color name="top_bar_background">@color/surface</color>
 
     <!-- Brand Colors (Legacy Mappings) -->
     <color name="primary_color">@color/primary</color>
     <color name="accent_color">@color/primary</color>
 
     <!-- Background Colors (Legacy Mappings) -->
-    <color name="background_light">@color/background</color>
-    <color name="background_dark">@color/on_background</color> <!-- Dark background color in Light mode context -->
+    <color name="background_light">@color/background</color> 
+    <color name="background_dark">@color/on_background</color>
     <color name="surface_color">@color/surface</color>
     
     <!-- Text Colors (Legacy Mappings) -->
-    <color name="primary_text_color">@color/on_background</color> <!-- Black text on Light BG -->
+    <color name="primary_text_color">@color/on_background</color>
     <color name="secondary_text_color">@color/on_surface_variant</color>
     <color name="text_on_primary">@color/on_primary</color>
     
     <!-- Logo Colors -->
     <color name="logo_background">#FFA726</color>
-    <color name="logo_icon_color">#2C2C2C</color>
+    <color name="logo_icon_color">#E6E1E5</color>
 
     <!-- Status Colors -->
-    <color name="success_color">#4CAF50</color>
+    <color name="success_color">#81C784</color>
     <color name="error_color">@color/error</color>
-    <color name="warning_color">#FFA000</color>
+    <color name="warning_color">#FFD54F</color>
 
     <!-- Specific UI Elements -->
-    <color name="divider_color">#E0E0E0</color>
-    <color name="card_background">#FFFFFF</color>
-    <color name="button_disabled">#CCCCCC</color>
-    <color name="hint_text_color">#757575</color>
+    <color name="divider_color">#424242</color>
+    <color name="card_background">#1E1E1E</color>
+    <color name="button_disabled">#555555</color>
+    <color name="hint_text_color">#BDBDBD</color>
     
     <!-- Input Field -->
-    <color name="input_background">#F0F0F0</color>
-    <color name="social_button_background">#F0F0F0</color>
+    <color name="input_background">#2D2D2D</color>
+    <color name="social_button_background">#2D2D2D</color>
 
     <!-- Buttons -->
     <color name="button_primary_start">#FFB74D</color>
-    <color name="button_primary_end">#FF9800</color>
-    <color name="notification_background">#FFF3E0</color> <!-- Lighter for Light Mode -->
+    <color name="button_primary_end">#FFA726</color>
+    <color name="notification_background">#2C1B00</color>
 
 </resources>
