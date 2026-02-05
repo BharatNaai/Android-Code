@@ -99,8 +99,6 @@ class NotificationViewModel(application: Application) : AndroidViewModel(applica
                 _isLoading.value = false
             }
         }
-        
-        _notificationSections.value = updatedSections
     }
 
     fun refreshNotifications() {

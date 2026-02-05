@@ -45,10 +45,6 @@ class NotificationFragment : Fragment() {
         setupRecyclerView()
         observeViewModel()
 
-        val repo = NotificationRepository(requireContext())
-        val items = repo.getInAppNotifications()
-        viewModel.setNotifications(items)
-
         val initialTop = binding.headerContainer.paddingTop
         ViewCompat.setOnApplyWindowInsetsListener(binding.headerContainer) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())

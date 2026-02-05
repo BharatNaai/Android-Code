@@ -20,12 +20,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import android.content.Intent
 
 class MainActivity : AppCompatActivity() {
 
@@ -62,17 +56,6 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.fetchCustomerDetails()
         observeCustomerDetails()
-
-        requestNotificationPermissionIfNeeded()
-
-        // Route if launched from a notification tap
-        handleNotificationIntent(intent)
-    }
-
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        setIntent(intent)
-        handleNotificationIntent(intent)
     }
 
     private fun setupNavigation() {
@@ -121,39 +104,6 @@ class MainActivity : AppCompatActivity() {
                 is ApiResult.Loading -> {
                     // Optionally, show a loading indicator
                 }
-            }
-        }
-    }
-
-    private fun handleNotificationIntent(intent: Intent?) {
-        val type = intent?.getStringExtra("notification_type")?.uppercase()
-        val actionData = intent?.getStringExtra("notification_action_data")
-        if (type.isNullOrBlank() && actionData.isNullOrBlank()) return
-
-        when {
-            type?.startsWith("APPOINTMENT_") == true -> {
-                // Navigate to booking history/details
-                binding.bottomNavigation.selectedItemId = R.id.nav_bookings
-                loadFragment(BookingHistoryFrag.newInstance())
-            }
-            type == "SPECIAL_OFFER" -> {
-                // Navigate to Search/Offers
-                binding.bottomNavigation.selectedItemId = R.id.nav_search
-                loadFragment(SearchFragment.newInstance())
-            }
-            else -> {
-                // Fallback to Notifications screen
-                val fragment = com.app.bharatnaai.ui.notifications.NotificationFragment.newInstance()
-                loadFragment(fragment)
-            }
-        }
-    }
-
-    private fun requestNotificationPermissionIfNeeded() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val granted = ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-            if (!granted) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1001)
             }
         }
     }
