@@ -6,20 +6,23 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import androidx.core.app.NotificationCompat
-import com.app.bharatnaai.utils.PreferenceManager
-import com.google.firebase.messaging.FirebaseMessagingService
-import com.google.firebase.messaging.RemoteMessage
-import java.util.concurrent.atomic.AtomicInteger
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.os.Build
+import android.util.Log
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import bharatnaai.R
 import com.app.bharatnaai.data.model.NotificationItem
 import com.app.bharatnaai.data.model.NotificationType
 import com.app.bharatnaai.ui.home.HomeFragment
+import com.app.bharatnaai.utils.PreferenceManager
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
 import java.util.Date
 import kotlin.random.Random
 
@@ -27,14 +30,12 @@ class BNFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        PreferenceManager.saveFcmToken(applicationContext, token)
-    }
-
         Log.d("FCM_TEST", "New token: $token")
-        PreferenceManager.saveToken(applicationContext, token)
+        PreferenceManager.saveFcmToken(applicationContext, token)
         // Trigger registration via WorkManager or EventBus since service can't access ViewModel
         WorkManager.getInstance(applicationContext).enqueue(OneTimeWorkRequestBuilder<TokenSyncWorker>()
             .setInputData(workDataOf("token" to token)).build())
+    }
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
@@ -122,12 +123,7 @@ class BNFirebaseMessagingService : FirebaseMessagingService() {
             notificationManager.createNotificationChannel(channel)
         }
     }
-
-    companion object {
-        const val CHANNEL_GENERAL = "bn_channel_general"
-        private val notificationIdGenerator = AtomicInteger(1000)
-    }
-    object AppState {
-        var isInForeground = false
-    }
+}
+object AppState {
+    var isInForeground = false
 }
