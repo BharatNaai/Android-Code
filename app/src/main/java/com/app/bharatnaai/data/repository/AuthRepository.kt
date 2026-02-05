@@ -17,6 +17,7 @@ import com.app.bharatnaai.data.model.RegisterDeviceResponse
 import com.app.bharatnaai.data.network.ApiClient
 import com.app.bharatnaai.data.session.SessionManager
 import com.app.bharatnaai.utils.CommonMethod
+import com.app.bharatnaai.utils.PreferenceManager
 import retrofit2.Response
 
 class AuthRepository(private val context: Context) {
@@ -76,6 +77,21 @@ class AuthRepository(private val context: Context) {
                         accessToken = body.accessToken,
                         refreshToken = body.refreshToken
                     )
+
+
+                    // Fetch and save user details
+                    try {
+                        val userResponse = apiService.getCustomerDetails("Bearer ${body.accessToken}")
+                        if (userResponse.isSuccessful && userResponse.body() != null) {
+                            val user = userResponse.body()!!
+                            PreferenceManager.saveUserName(context, user.fullName)
+                            PreferenceManager.saveUserEmail(context, user.email)
+                            PreferenceManager.saveUserPhone(context, user.phone)
+                            PreferenceManager.saveUserId(context, user.userId)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                     ApiResult.Success(body)
                 } else {
                     ApiResult.Error("Empty response from server")
@@ -98,14 +114,26 @@ class AuthRepository(private val context: Context) {
             
             val request = TokenRefreshRequest(refreshToken)
             val response = apiService.refreshToken(request)
-            val result = response.toApiResult()
             
-            // Update access token if refresh is successful
-            if (result is ApiResult.Success) {
-                sessionManager.updateAccessToken(result.data.accessToken)
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    val accessToken = body.accessToken
+                    val newRefreshToken = body.refreshToken
+                    
+                    if (!newRefreshToken.isNullOrEmpty()) {
+                        sessionManager.saveTokens(accessToken, newRefreshToken)
+                    } else {
+                        sessionManager.updateAccessToken(accessToken)
+                    }
+                    
+                    ApiResult.Success(body)
+                } else {
+                    ApiResult.Error("Empty response from server")
+                }
+            } else {
+                ApiResult.Error("Token refresh failed: ${response.code()} ${response.message()}")
             }
-            
-            result
         } catch (e: Exception) {
             ApiResult.Error(e.message ?: "Token refresh failed")
         }

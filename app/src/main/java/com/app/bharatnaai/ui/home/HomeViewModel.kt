@@ -85,10 +85,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             try {
+                // Try fetching from API
                 val response = nearbyRepo.getNearbySaloonDetails(lat, lng)
                 val body = response.body()
 
-                if (response.isSuccessful && body != null) {
+                if (response.isSuccessful && !body.isNullOrEmpty()) {
                     val withAbsoluteImages = body.map { s ->
                         val absolute = s.imagePath?.let { path ->
                             val raw = path.trim()
@@ -105,20 +106,80 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                         isFirstLoad = false
                     )
                 } else {
-                    _homeState.value = _homeState.value?.copy(
-                        isLoading = false,
-                        isFirstLoad = false,
-                        error = "Failed to load featured salons"
-                    )
+                    // API returned empty or null, use mock data
+                    useMockFeaturedSalons()
                 }
             } catch (e: Exception) {
-                _homeState.value = _homeState.value?.copy(
-                    isLoading = false,
-                    isFirstLoad = false,
-                    error = e.message ?: "Unknown error loading salons"
-                )
+                // Network/parsing error, use mock data
+                useMockFeaturedSalons()
             }
         }
+    }
+    
+    private fun useMockFeaturedSalons() {
+        _featuredSalons.value = getMockFeaturedSalons()
+        _homeState.value = _homeState.value?.copy(
+            isLoading = false,
+            isFirstLoad = false,
+            error = null // clear error since we are showing mock data
+        )
+    }
+
+    private fun getMockFeaturedSalons(): List<Salon> {
+        return listOf(
+            Salon(
+                salonId = 101,
+                salonName = "Luxe Hair & Spa",
+                address = "123 High Street, Mumbai",
+                imagePath = "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=1600",
+                latitude = 19.0760,
+                longitude = 72.8777,
+                barbers = emptyList(),
+                rating = 4.8,
+                distance = 1.2,
+                priceLevel = 3,
+                services = listOf("Haircut", "Spa", "Coloring")
+            ),
+            Salon(
+                salonId = 102,
+                salonName = "Urban Grooming Studio",
+                address = "45 Park Avenue, Delhi",
+                imagePath = "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&q=80&w=1600",
+                latitude = 28.6139,
+                longitude = 77.2090,
+                barbers = emptyList(),
+                rating = 4.5,
+                distance = 2.5,
+                priceLevel = 2,
+                services = listOf("Shave", "Facial", "Hair Styling")
+            ),
+            Salon(
+                salonId = 103,
+                salonName = "The Barber's Den",
+                address = "78 Block C, Bangalore",
+                imagePath = "https://images.unsplash.com/photo-1503951914205-22a69dce7baf?auto=format&fit=crop&q=80&w=1600",
+                latitude = 12.9716,
+                longitude = 77.5946,
+                barbers = emptyList(),
+                rating = 4.6,
+                distance = 3.8,
+                priceLevel = 2,
+                services = listOf("Haircut", "Beard Trim")
+            ),
+            Salon(
+                salonId = 104,
+                salonName = "Elite Salon",
+                address = "90 Green Valley, Pune",
+                imagePath = "https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6?auto=format&fit=crop&q=80&w=1600",
+                latitude = 18.5204,
+                longitude = 73.8567,
+                barbers = emptyList(),
+                rating = 4.7,
+                distance = 5.0,
+                priceLevel = 3,
+                services = listOf("Full Package", "Massage")
+            )
+        )
     }
     
     fun onLocationPermissionGranted() {

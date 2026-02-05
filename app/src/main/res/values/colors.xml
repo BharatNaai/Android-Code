@@ -7,6 +7,8 @@
     <color name="on_primary_container">#FFDDB3</color>
     <color name="primary_dark">#FF8F00</color>
 
+    <color name="profile_header_color">#7C5617</color>
+
     <!-- Secondary Brand Colors -->
     <color name="secondary">#FFCC80</color>
     <color name="on_secondary">#4A2800</color>

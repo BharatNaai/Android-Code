@@ -25,6 +25,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -44,7 +45,7 @@ interface ApiService {
     @POST("auth/refresh")
     suspend fun refreshToken(
         @Body request: TokenRefreshRequest
-    ): Response<ApiResponse<TokenRefreshResponse>>
+    ): Response<TokenRefreshResponse>
 
     @POST("auth/forgot-password")
     suspend fun forgetPassword(
@@ -57,6 +58,7 @@ interface ApiService {
     ): Response<ResetPasswordResponse>
 
     @GET("barbers/nearby-salons")
+    @Headers("isPublic: true")
     suspend fun getNearbySaloonDetails(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double
@@ -68,6 +70,7 @@ interface ApiService {
     ) :Response<CustomerDetails>
 
     @GET("barbers/salon/{salonId}")
+    @Headers("isPublic: true")
     suspend fun getSalonDetails(
         @Path("salonId") salonId: Int
     ): Response<Salon>

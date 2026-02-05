@@ -72,9 +72,9 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        observeData()
         setupViews()
         setupRecyclerView()
+        observeData()
         setupClickListeners()
         ensureLocationPermission()
         checkAndRequestNotificationPermission()
@@ -148,8 +148,6 @@ class HomeFragment : Fragment() {
             binding.tvLocationName.text = state.currentLocation
         }
     }
-
-
 
     private fun navigateToSalonDetails(salon: Salon) {
         val fragment = SaloonDetailsFragment()

@@ -27,14 +27,16 @@ data class LoginResponse(
     @SerializedName("refreshToken")
     val refreshToken: String,
     @SerializedName("message")
-    val message: String
+    val message: String? = null
 )
 
 data class TokenRefreshResponse(
     @SerializedName("accessToken")
     val accessToken: String,
+    @SerializedName("refreshToken")
+    val refreshToken: String? = null,
     @SerializedName("message")
-    val message: String
+    val message: String? = null
 )
 
 data class ForgetPasswordResponse(

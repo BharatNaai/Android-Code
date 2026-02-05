@@ -16,6 +16,17 @@ class AuthInterceptor(private val context: Context) : Interceptor {
         val originalRequest = chain.request()
         
         // Skip adding token for auth endpoints
+        // Check for "isPublic" header to skip auth
+        val isPublic = originalRequest.header("isPublic") == "true"
+
+        if (isPublic) {
+            val newRequest = originalRequest.newBuilder()
+                .removeHeader("isPublic")
+                .build()
+            return chain.proceed(newRequest)
+        }
+
+        // Skip adding token for auth endpoints (fallback/legacy check)
         val url = originalRequest.url.toString()
         if (url.contains("/auth/login") || url.contains("/auth/register") || url.contains("/auth/refresh")) {
             return chain.proceed(originalRequest)
