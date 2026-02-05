@@ -9,6 +9,8 @@ import com.app.bharatnaai.data.model.ForgetPasswordRequest
 import com.app.bharatnaai.data.model.ForgetPasswordResponse
 import com.app.bharatnaai.data.model.LoginRequest
 import com.app.bharatnaai.data.model.LoginResponse
+import com.app.bharatnaai.data.model.RegisterDeviceRequest
+import com.app.bharatnaai.data.model.RegisterDeviceResponse
 import com.app.bharatnaai.data.model.RegisterRequest
 import com.app.bharatnaai.data.model.RegisterResponse
 import com.app.bharatnaai.data.model.ResetPasswordRequest
@@ -18,12 +20,12 @@ import com.app.bharatnaai.data.model.TokenRefreshRequest
 import com.app.bharatnaai.data.model.TokenRefreshResponse
 import com.app.bharatnaai.data.model.SlotBookingRequest
 import com.app.bharatnaai.data.model.notificationRequest
-import com.app.bharatnaai.data.model.notificationResponse
-import okhttp3.Request
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -43,7 +45,7 @@ interface ApiService {
     @POST("auth/refresh")
     suspend fun refreshToken(
         @Body request: TokenRefreshRequest
-    ): Response<ApiResponse<TokenRefreshResponse>>
+    ): Response<TokenRefreshResponse>
 
     @POST("auth/forgot-password")
     suspend fun forgetPassword(
@@ -56,6 +58,7 @@ interface ApiService {
     ): Response<ResetPasswordResponse>
 
     @GET("barbers/nearby-salons")
+    @Headers("isPublic: true")
     suspend fun getNearbySaloonDetails(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double
@@ -67,13 +70,14 @@ interface ApiService {
     ) :Response<CustomerDetails>
 
     @GET("barbers/salon/{salonId}")
+    @Headers("isPublic: true")
     suspend fun getSalonDetails(
         @Path("salonId") salonId: Int
     ): Response<Salon>
 
     @GET("barbers/{barberId}/slots")
     suspend fun getAvailableSlots(
-        @Path("barberId") barberId: Int,
+        @Path("barberId") barberId: String,
         @Query("date") date: String,
         @Query("serviceType") serviceType: String
     ): Response<BarberSlotsAvailableResponseRaw>
@@ -91,5 +95,10 @@ interface ApiService {
     @POST("barbers/push-notification")
     suspend fun getFirebaseNotification(
         @Body request: notificationRequest
-    ):Response<notificationResponse>
+    ):Response<ResponseBody>
+
+    @POST("barbers/register-device")
+    suspend fun registerDevice(
+        @Body request: RegisterDeviceRequest
+    ):Response<RegisterDeviceResponse>
 }

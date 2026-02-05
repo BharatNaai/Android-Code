@@ -70,7 +70,7 @@ class UserProfileFragment : Fragment() {
             // Show logged-in content
             binding.loggedInContent.visibility = View.VISIBLE
             binding.loggedOutContent.visibility = View.GONE
-
+            binding.topBar.background = resources.getDrawable(R.color.profile_header_color)
             val context = requireContext()
             binding.tvUserName.text = PreferenceManager.getUserName(context) ?: "N/A"
             binding.tvEmail.text = PreferenceManager.getUserEmail(context) ?: "N/A"

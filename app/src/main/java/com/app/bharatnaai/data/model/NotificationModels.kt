@@ -25,9 +25,3 @@ data class NotificationSection(
     val sectionTitle: String,
     val notifications: List<NotificationItem>
 )
-
-data class NotificationResponse(
-    val success: Boolean,
-    val message: String,
-    val notifications: List<NotificationItem>
-)

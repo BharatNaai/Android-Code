@@ -1,28 +1,28 @@
 package com.app.bharatnaai.ui.notifications
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import bharatnaai.R
 import com.app.bharatnaai.data.model.NotificationItem
 import com.app.bharatnaai.data.model.NotificationSection
-import com.app.bharatnaai.data.model.NotificationType
+import com.app.bharatnaai.data.repository.NotificationRepository
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NotificationViewModel : ViewModel() {
+class NotificationViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _notificationSections = MutableLiveData<List<NotificationSection>>()
     val notificationSections: LiveData<List<NotificationSection>> = _notificationSections
-
+    private val _toastMessage = MutableLiveData<String?>()
+    val toastMessage: LiveData<String?> = _toastMessage
+    private val repository = NotificationRepository(application.applicationContext)
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
-
     private val _isEmpty = MutableLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
-
     init {
         // Keep empty by default; Fragment can supply repository data
         _notificationSections.value = emptyList()
@@ -39,70 +39,7 @@ class NotificationViewModel : ViewModel() {
         }
     }
 
-    private fun getMockNotifications(): List<NotificationItem> {
-        val today = Calendar.getInstance()
-        val yesterday = Calendar.getInstance().apply {
-            add(Calendar.DAY_OF_MONTH, -1)
-        }
-        
-        return listOf(
-            // Today's notifications
-            NotificationItem(
-                id = "1",
-                type = NotificationType.APPOINTMENT_CONFIRMED,
-                title = "Appointment Confirmed",
-                message = "Your appointment with Alex at The Barber Shop is confirmed.",
-                timestamp = Calendar.getInstance().apply { 
-                    set(Calendar.HOUR_OF_DAY, 10)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }.time,
-                iconResource = R.drawable.ic_calendar_notification
-            ),
-            NotificationItem(
-                id = "2",
-                type = NotificationType.SPECIAL_OFFER,
-                title = "Special Offer",
-                message = "Special offer: 20% off your next haircut at The Barber Shop.",
-                timestamp = Calendar.getInstance().apply { 
-                    set(Calendar.HOUR_OF_DAY, 12)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }.time,
-                iconResource = R.drawable.ic_percent_notification
-            ),
-            
-            // Yesterday's notifications
-            NotificationItem(
-                id = "3",
-                type = NotificationType.APPOINTMENT_REMINDER,
-                title = "Appointment Reminder",
-                message = "Reminder: Your appointment with Alex at The Barber Shop is tomorrow.",
-                timestamp = yesterday.apply { 
-                    set(Calendar.HOUR_OF_DAY, 9)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }.time,
-                iconResource = R.drawable.ic_bell_notification
-            ),
-            NotificationItem(
-                id = "4",
-                type = NotificationType.APPOINTMENT_UPDATED,
-                title = "Appointment Updated",
-                message = "Your appointment with Alex at The Barber Shop has been updated.",
-                timestamp = yesterday.apply { 
-                    set(Calendar.HOUR_OF_DAY, 17)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }.time,
-                iconResource = R.drawable.ic_calendar_notification
-            )
-        )
-    }
+
 
     private fun groupNotificationsByDate(notifications: List<NotificationItem>): List<NotificationSection> {
         val calendar = Calendar.getInstance()
@@ -146,19 +83,21 @@ class NotificationViewModel : ViewModel() {
         }
     }
 
-    fun markNotificationAsRead(notificationId: String) {
-        val currentSections = _notificationSections.value ?: return
-        
-        val updatedSections = currentSections.map { section ->
-            section.copy(
-                notifications = section.notifications.map { notification ->
-                    if (notification.id == notificationId) {
-                        notification.copy(isRead = true)
-                    } else {
-                        notification
-                    }
+    fun sendPushNotification(fcmToken: String, message: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val response = repository.sendPushNotification(fcmToken, message)
+                if (response.isSuccessful) {
+                    _toastMessage.value = "Notification sent"
+                } else {
+                    _toastMessage.value = response.errorBody()?.string() ?: "Failed to send notification"
                 }
-            )
+            } catch (e: Exception) {
+                _toastMessage.value = "Failed to send notification"
+            } finally {
+                _isLoading.value = false
+            }
         }
         
         _notificationSections.value = updatedSections
@@ -167,4 +106,5 @@ class NotificationViewModel : ViewModel() {
     fun refreshNotifications() {
         // No-op by default; Fragment can reload from repository and call setNotifications
     }
+    fun onToastShown() { _toastMessage.value = null }
 }

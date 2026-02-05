@@ -70,7 +70,7 @@ class SaloonDetailsFragment : Fragment() {
     private fun navigateToBarberDetails(barber: Barber) {
         val fragment = BarberDetailsFragment()
         fragment.arguments = Bundle().apply {
-            putInt("barberId", barber.barberId)
+            putString("barberId", barber.barberId)
             putString("barberName", barber.barberName)
         }
         parentFragmentManager.beginTransaction()

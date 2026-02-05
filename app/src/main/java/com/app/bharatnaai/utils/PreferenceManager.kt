@@ -2,7 +2,6 @@ package com.app.bharatnaai.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-
 object PreferenceManager {
 
     private const val PREF_NAME = "BharatNaaiPrefs"
@@ -11,7 +10,6 @@ object PreferenceManager {
     private const val USER_PHONE = "user_phone"
     private const val USER_ID = "user_id"
     private const val FCM_TOKEN = "fcm_token"
-
     private fun getPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     }

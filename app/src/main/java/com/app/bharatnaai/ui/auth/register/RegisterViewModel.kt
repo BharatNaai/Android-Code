@@ -158,7 +158,8 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
                 is ApiResult.Success -> {
                     _registerState.value = _registerState.value?.copy(
                         isLoading = false,
-                        isSuccess = true
+                        isSuccess = true,
+                        successMessage = result.data.message
                     )
 
                     // Notify this device (for test/confirmation)

@@ -14,7 +14,7 @@ class CustomerDetailsRepo(private val context: Context) {
     suspend fun getCustomerDetails(): ApiResult<CustomerDetails> {
         // Check internet
         if (!commonMethod.isInternetAvailable(context)) {
-            return ApiResult.Error("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
 
         // Retrieve token from session

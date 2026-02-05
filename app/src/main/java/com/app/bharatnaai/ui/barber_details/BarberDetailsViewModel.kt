@@ -74,7 +74,7 @@ class BarberDetailsViewModel(app: Application) : AndroidViewModel(app) {
         _state.value = _state.value?.copy(selectedTimeIndex = index)
     }
 
-    fun fetchSlots(barberId: Int, date: String, serviceType: String) {
+    fun fetchSlots(barberId: String, date: String, serviceType: String) {
         _state.value = _state.value?.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {

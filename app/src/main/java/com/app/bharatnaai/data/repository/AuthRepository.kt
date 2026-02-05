@@ -12,9 +12,12 @@ import com.app.bharatnaai.data.model.ResetPasswordRequest
 import com.app.bharatnaai.data.model.ResetPasswordResponse
 import com.app.bharatnaai.data.model.TokenRefreshRequest
 import com.app.bharatnaai.data.model.TokenRefreshResponse
+import com.app.bharatnaai.data.model.RegisterDeviceRequest
+import com.app.bharatnaai.data.model.RegisterDeviceResponse
 import com.app.bharatnaai.data.network.ApiClient
 import com.app.bharatnaai.data.session.SessionManager
 import com.app.bharatnaai.utils.CommonMethod
+import com.app.bharatnaai.utils.PreferenceManager
 import retrofit2.Response
 
 class AuthRepository(private val context: Context) {
@@ -25,7 +28,7 @@ class AuthRepository(private val context: Context) {
 
     suspend fun registerUser(user: RegisterRequest): ApiResult<RegisterResponse> {
         if (!commonMethod.isInternetAvailable(context)) {
-            return ApiResult.Error("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
         return try {
             val response = apiService.registerUser(user)
@@ -41,9 +44,26 @@ class AuthRepository(private val context: Context) {
         }
     }
 
+    suspend fun registerDevice(deviceId: String, fcmToken: String): ApiResult<RegisterDeviceResponse> {
+        if (!commonMethod.isInternetAvailable(context)) {
+            commonMethod.noInternetDialog(context)
+        }
+        return try {
+            val request = RegisterDeviceRequest(deviceId = deviceId, fcmToken = fcmToken)
+            val response = apiService.registerDevice(request)
+            if (response.isSuccessful) {
+                response.body()?.let { ApiResult.Success(it) } ?: ApiResult.Error("Empty response from server")
+            } else {
+                ApiResult.Error("Device registration failed: ${response.code()} ${response.message()}")
+            }
+        } catch (e: Exception) {
+            ApiResult.Error(e.message ?: "Device registration failed")
+        }
+    }
+
     suspend fun loginUser(email: String, password: String): ApiResult<LoginResponse> {
         if (!commonMethod.isInternetAvailable(context)) {
-            return ApiResult.Error("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
         return try {
             val loginRequest = LoginRequest(email = email, password = password)
@@ -57,6 +77,21 @@ class AuthRepository(private val context: Context) {
                         accessToken = body.accessToken,
                         refreshToken = body.refreshToken
                     )
+
+
+                    // Fetch and save user details
+                    try {
+                        val userResponse = apiService.getCustomerDetails("Bearer ${body.accessToken}")
+                        if (userResponse.isSuccessful && userResponse.body() != null) {
+                            val user = userResponse.body()!!
+                            PreferenceManager.saveUserName(context, user.fullName)
+                            PreferenceManager.saveUserEmail(context, user.email)
+                            PreferenceManager.saveUserPhone(context, user.phone)
+                            PreferenceManager.saveUserId(context, user.userId)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                     ApiResult.Success(body)
                 } else {
                     ApiResult.Error("Empty response from server")
@@ -71,7 +106,7 @@ class AuthRepository(private val context: Context) {
 
     suspend fun refreshToken(): ApiResult<TokenRefreshResponse> {
         if (!commonMethod.isInternetAvailable(context)) {
-            return ApiResult.Error("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
         return try {
             val refreshToken = sessionManager.getRefreshToken()
@@ -79,14 +114,26 @@ class AuthRepository(private val context: Context) {
             
             val request = TokenRefreshRequest(refreshToken)
             val response = apiService.refreshToken(request)
-            val result = response.toApiResult()
             
-            // Update access token if refresh is successful
-            if (result is ApiResult.Success) {
-                sessionManager.updateAccessToken(result.data.accessToken)
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    val accessToken = body.accessToken
+                    val newRefreshToken = body.refreshToken
+                    
+                    if (!newRefreshToken.isNullOrEmpty()) {
+                        sessionManager.saveTokens(accessToken, newRefreshToken)
+                    } else {
+                        sessionManager.updateAccessToken(accessToken)
+                    }
+                    
+                    ApiResult.Success(body)
+                } else {
+                    ApiResult.Error("Empty response from server")
+                }
+            } else {
+                ApiResult.Error("Token refresh failed: ${response.code()} ${response.message()}")
             }
-            
-            result
         } catch (e: Exception) {
             ApiResult.Error(e.message ?: "Token refresh failed")
         }
@@ -94,7 +141,7 @@ class AuthRepository(private val context: Context) {
 
     suspend fun forgetPassword(email: String): ApiResult<ForgetPasswordResponse>{
         if (!commonMethod.isInternetAvailable(context)) {
-            return ApiResult.Error("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
         return try{
             val forgetpasswordRequest = ForgetPasswordRequest(email = email)
@@ -117,7 +164,7 @@ class AuthRepository(private val context: Context) {
 
     suspend fun resetPassword(email: String, otp: String, password: String): ApiResult<ResetPasswordResponse> {
         if (!commonMethod.isInternetAvailable(context)) {
-            return ApiResult.Error("No internet connection")
+            commonMethod.noInternetDialog(context)
         }
         return try {
             val resetPasswordRequest = ResetPasswordRequest(

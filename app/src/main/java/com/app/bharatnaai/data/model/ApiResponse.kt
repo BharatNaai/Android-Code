@@ -27,14 +27,16 @@ data class LoginResponse(
     @SerializedName("refreshToken")
     val refreshToken: String,
     @SerializedName("message")
-    val message: String
+    val message: String? = null
 )
 
 data class TokenRefreshResponse(
     @SerializedName("accessToken")
     val accessToken: String,
+    @SerializedName("refreshToken")
+    val refreshToken: String? = null,
     @SerializedName("message")
-    val message: String
+    val message: String? = null
 )
 
 data class ForgetPasswordResponse(
@@ -64,7 +66,7 @@ data class BarberSlotsAvailableResponse(
     @SerializedName("totalSlots") val totalSlots: Int,
     @SerializedName("slots") val slots: List<Slot>,
     @SerializedName("success") val success: Boolean,
-    @SerializedName("barberId") val barberId: Int? = null,
+    @SerializedName("barberId") val barberId: String? = null,
     @SerializedName("serviceType") val serviceType: String? = null,
     @SerializedName("date") val date: String? = null
 )
@@ -74,7 +76,7 @@ data class BarberSlotsAvailableResponseRaw(
     @SerializedName("totalSlots") val totalSlots: Int,
     @SerializedName("slots") val slots: List<JsonObject>,
     @SerializedName("success") val success: Boolean,
-    @SerializedName("barberId") val barberId: Int? = null,
+    @SerializedName("barberId") val barberId: String? = null,
     @SerializedName("serviceType") val serviceType: String? = null,
     @SerializedName("date") val date: String? = null
 )
@@ -112,4 +114,11 @@ data class BookingDetails(
 data class notificationResponse(
     val message: String,
     val success: Boolean
+)
+
+data class RegisterDeviceResponse(
+    @SerializedName("success")
+    val success: Boolean,
+    @SerializedName("message")
+    val message: String
 )

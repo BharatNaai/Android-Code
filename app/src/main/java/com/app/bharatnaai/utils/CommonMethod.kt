@@ -1,8 +1,11 @@
 package com.app.bharatnaai.utils
 
+import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.view.LayoutInflater
+import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageView
 import bharatnaai.R
 import com.bumptech.glide.Glide
@@ -44,5 +47,21 @@ class CommonMethod {
             .transform(CenterCrop())
             .transition(DrawableTransitionOptions.withCrossFade())
             .into(imageView)
+    }
+
+    fun noInternetDialog(context : Context): AlertDialog {
+        val dialogView = LayoutInflater.from(context)
+            .inflate(R.layout.dialog_no_internet, null)
+
+        val btnDismiss = dialogView.findViewById<AppCompatButton>(R.id.btnDismiss)
+        val dialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        btnDismiss.setOnClickListener {
+            dialog.dismiss()
+        }
+        return dialog
     }
 }

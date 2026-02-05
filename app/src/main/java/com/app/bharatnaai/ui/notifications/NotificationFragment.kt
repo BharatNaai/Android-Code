@@ -13,13 +13,16 @@ import com.app.bharatnaai.data.repository.NotificationRepository
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import android.widget.Toast
 
 class NotificationFragment : Fragment() {
 
     private var _binding: FragmentNotificationsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: NotificationViewModel by viewModels()
+    private val viewModel: NotificationViewModel by viewModels {
+        androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
+    }
     private lateinit var notificationAdapter: NotificationAdapter
 
     companion object {
@@ -86,12 +89,17 @@ class NotificationFragment : Fragment() {
             // You can add loading indicator here if needed
             // For now, we'll keep it simple
         }
+
+        viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                viewModel.onToastShown()
+            }
+        }
     }
 
     private fun onNotificationClick(notification: NotificationItem) {
-        // Mark notification as read
-        viewModel.markNotificationAsRead(notification.id)
-        
+
         // Handle navigation based on notification type or actionData
         // For now, we'll just show a simple response
         // You can extend this to navigate to specific screens
