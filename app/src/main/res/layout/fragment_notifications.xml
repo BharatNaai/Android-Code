@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_semibold"
             android:gravity="center"
-            android:text="Notifications"
+            android:text="@string/notifications"
             android:textColor="@color/primary_text_color"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -89,7 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/poppins_medium"
-            android:text="No notifications yet"
+            android:text="@string/no_notifications_yet"
             android:textColor="@color/secondary_text_color"
             android:textSize="16sp" />
 
@@ -98,7 +98,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:fontFamily="@font/poppins_regular"
-            android:text="You'll see notifications here when you have them"
+            android:text="@string/you_ll_see_notifications_here_when_you_have_them"
             android:textColor="@color/secondary_text_color"
             android:textSize="14sp" />
 

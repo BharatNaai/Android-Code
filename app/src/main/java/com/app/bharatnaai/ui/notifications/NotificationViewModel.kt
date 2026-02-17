@@ -39,7 +39,26 @@ class NotificationViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-
+    fun getCustomersNotification(customerId: Long) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val response = repository.customersNotification(customerId)
+                if (response.isSuccessful && response.body() != null) {
+                    val notifications = response.body()
+                    // Set the notifications to the LiveData (this will also group them)
+                    setNotifications(notifications!!)
+                } else {
+                    _toastMessage.value = "Failed to fetch notifications: ${response.message()}"
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _toastMessage.value = "Error loading notifications"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
 
     private fun groupNotificationsByDate(notifications: List<NotificationItem>): List<NotificationSection> {
         val calendar = Calendar.getInstance()

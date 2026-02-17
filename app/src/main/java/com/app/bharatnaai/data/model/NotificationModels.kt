@@ -4,12 +4,12 @@ import java.util.Date
 
 data class NotificationItem(
     val id: String,
-    val type: NotificationType,
+    val type: NotificationType = NotificationType.GENERAL,
     val title: String,
     val message: String,
-    val timestamp: Date,
+    val timestamp: Date = Date(),
     val isRead: Boolean = false,
-    val iconResource: Int,
+    val iconResource: Int = 0, // Default value to avoid JSON parsing errors
     val actionData: String? = null // For navigation or additional data
 )
 

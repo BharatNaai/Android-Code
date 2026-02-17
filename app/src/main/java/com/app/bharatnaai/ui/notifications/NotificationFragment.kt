@@ -9,16 +9,19 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import bharatnaai.databinding.FragmentNotificationsBinding
 import com.app.bharatnaai.data.model.NotificationItem
-import com.app.bharatnaai.data.repository.NotificationRepository
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import android.widget.Toast
+import com.app.bharatnaai.data.model.NotificationType
+import com.app.bharatnaai.utils.CommonMethod
+import com.app.bharatnaai.utils.PreferenceManager
 
 class NotificationFragment : Fragment() {
 
     private var _binding: FragmentNotificationsBinding? = null
     private val binding get() = _binding!!
+    val commonMethod  = CommonMethod()
 
     private val viewModel: NotificationViewModel by viewModels {
         androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
@@ -43,7 +46,8 @@ class NotificationFragment : Fragment() {
         
         setupUI()
         setupRecyclerView()
-        observeViewModel()
+        setupObservers()
+        loadData()
 
         val initialTop = binding.headerContainer.paddingTop
         ViewCompat.setOnApplyWindowInsetsListener(binding.headerContainer) { v, insets ->
@@ -71,7 +75,14 @@ class NotificationFragment : Fragment() {
         }
     }
 
-    private fun observeViewModel() {
+    private fun loadData() {
+        val customerId = PreferenceManager.getUserId(requireContext())
+        if (customerId > 0L) {
+            viewModel.getCustomersNotification(customerId)
+        }
+    }
+
+    private fun setupObservers() {
         viewModel.notificationSections.observe(viewLifecycleOwner) { sections ->
             notificationAdapter.submitList(sections)
         }
@@ -100,17 +111,17 @@ class NotificationFragment : Fragment() {
         // For now, we'll just show a simple response
         // You can extend this to navigate to specific screens
         when (notification.type) {
-            com.app.bharatnaai.data.model.NotificationType.APPOINTMENT_CONFIRMED,
-            com.app.bharatnaai.data.model.NotificationType.APPOINTMENT_REMINDER,
-            com.app.bharatnaai.data.model.NotificationType.APPOINTMENT_UPDATED -> {
+            NotificationType.APPOINTMENT_CONFIRMED,
+            NotificationType.APPOINTMENT_REMINDER,
+            NotificationType.APPOINTMENT_UPDATED -> {
                 // Navigate to booking details or calendar
                 // For now, just a placeholder
             }
-            com.app.bharatnaai.data.model.NotificationType.SPECIAL_OFFER -> {
+            NotificationType.SPECIAL_OFFER -> {
                 // Navigate to offers or salon details
                 // For now, just a placeholder
             }
-            com.app.bharatnaai.data.model.NotificationType.GENERAL -> {
+            NotificationType.GENERAL -> {
                 // Handle general notifications
             }
         }

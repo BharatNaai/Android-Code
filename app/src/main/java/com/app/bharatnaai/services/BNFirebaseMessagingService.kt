@@ -50,6 +50,13 @@ class BNFirebaseMessagingService : FirebaseMessagingService() {
         if (!AppState.isInForeground) {
             showSystemNotification(title, body, typeStr)
         }
+
+        // To update the notification
+        // Send broadcast to update UI (HomeFragment)
+        val intent = Intent("com.app.bharatnaai.NOTIFICATION_UPDATE")
+        intent.setPackage(packageName) // Ensure explicit broadcast
+        sendBroadcast(intent)
+
         val item = NotificationItem(
             id = System.currentTimeMillis().toString(),
             type = type,

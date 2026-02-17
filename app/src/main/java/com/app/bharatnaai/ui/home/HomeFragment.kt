@@ -78,12 +78,42 @@ class HomeFragment : Fragment() {
         setupClickListeners()
         ensureLocationPermission()
         checkAndRequestNotificationPermission()
+        registerNotificationReceiver()
 
         val initialTop = binding.headerContainer.paddingTop
         ViewCompat.setOnApplyWindowInsetsListener(binding.headerContainer) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             v.updatePadding(top = initialTop + systemBars.top)
             insets
+        }
+    }
+
+    private val notificationReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context?, intent: Intent?) {
+            onNotificationUpdate()
+        }
+    }
+
+    private fun registerNotificationReceiver() {
+        val filter = android.content.IntentFilter("com.app.bharatnaai.NOTIFICATION_UPDATE")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireContext().registerReceiver(notificationReceiver, filter, android.content.Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            ContextCompat.registerReceiver(
+                requireContext(),
+                notificationReceiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            requireContext().unregisterReceiver(notificationReceiver)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -158,6 +188,10 @@ class HomeFragment : Fragment() {
             .replace(R.id.fragment_container, fragment) // Assuming you have a container with this ID
             .addToBackStack(null)
             .commit()
+    }
+
+    fun onNotificationUpdate(){
+        binding.notificationDot.visibility = View.VISIBLE
     }
 
     private fun setupClickListeners() {

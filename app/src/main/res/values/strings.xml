@@ -76,4 +76,7 @@
     <string name="change_internet_settings">Change Internet Settings</string>
     <string name="dismiss">Dismiss</string>
     <string name="done">Done</string>
+    <string name="you_ll_see_notifications_here_when_you_have_them">You\'ll see notifications here when you have them</string>
+    <string name="no_notifications_yet">No notifications yet</string>
+    <string name="notifications">Notifications</string>
 </resources>

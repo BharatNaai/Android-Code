@@ -9,6 +9,7 @@ import com.app.bharatnaai.data.model.ForgetPasswordRequest
 import com.app.bharatnaai.data.model.ForgetPasswordResponse
 import com.app.bharatnaai.data.model.LoginRequest
 import com.app.bharatnaai.data.model.LoginResponse
+import com.app.bharatnaai.data.model.NotificationItem
 import com.app.bharatnaai.data.model.RegisterDeviceRequest
 import com.app.bharatnaai.data.model.RegisterDeviceResponse
 import com.app.bharatnaai.data.model.RegisterRequest
@@ -96,6 +97,12 @@ interface ApiService {
     suspend fun getFirebaseNotification(
         @Body request: notificationRequest
     ):Response<ResponseBody>
+
+    @GET("customers/{customer_id}/notifications")
+    suspend fun getCustomerNotification(
+        @Path("customer_id") customerId: Long,
+        @Header("Authorization") accessToken : String
+    ): Response<List<NotificationItem>>
 
     @POST("barbers/register-device")
     suspend fun registerDevice(

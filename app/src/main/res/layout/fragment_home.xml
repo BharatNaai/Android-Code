@@ -119,7 +119,8 @@
                     android:layout_height="8dp"
                     android:background="@drawable/notification_dot"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:visibility="invisible"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- Profile Icon -->
