@@ -35,18 +35,20 @@ class UserProfileViewModel(application: Application) : AndroidViewModel(applicat
 
     fun loadUserProfile() {
         val context = getApplication<Application>().applicationContext
+        val isLoggedIn = authRepository.isLoggedIn()
 
         // Mock user profile data
         val profileData = CustomerDetails(
             fullName = PreferenceManager.getUserName(context) ?: "",
             phone = PreferenceManager.getUserPhone(context) ?: "",
             email = PreferenceManager.getUserEmail(context) ?: "",
-            userId = PreferenceManager.getUserId(context) ?: 0
+            userId = PreferenceManager.getUserId(context)
         )
 
         _profileState.value = _profileState.value?.copy(
+            isLoggedIn = isLoggedIn,
             customerDetails = profileData
-        )
+        ) ?: ProfileState(isLoggedIn = isLoggedIn, customerDetails = profileData)
     }
 
     fun logout() {

@@ -52,6 +52,13 @@ class SessionManager private constructor(private val context: Context) {
             apply()
         }
     }
+
+    /**
+     * Set login status manually (e.g. for biometric login)
+     */
+    fun setIsLoggedIn(isLoggedIn: Boolean) {
+        sharedPreferences.edit().putBoolean(KEY_IS_LOGGED_IN, isLoggedIn).apply()
+    }
     
     /**
      * Get stored access token
@@ -81,9 +88,15 @@ class SessionManager private constructor(private val context: Context) {
      * Check if user is logged in
      */
     fun isLoggedIn(): Boolean {
-        return sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false) && 
-               getAccessToken() != null && 
-               getRefreshToken() != null
+        // We prioritize the explicit logged in flag
+        return sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false)
+    }
+    
+    /**
+     * Check if the session has valid tokens
+     */
+    fun hasTokens(): Boolean {
+        return getAccessToken() != null && getRefreshToken() != null
     }
     
     /**

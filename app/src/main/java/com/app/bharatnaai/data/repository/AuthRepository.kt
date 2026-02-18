@@ -196,6 +196,10 @@ class AuthRepository(private val context: Context) {
     fun isLoggedIn(): Boolean {
         return sessionManager.isLoggedIn()
     }
+
+    fun setLoggedIn(isLoggedIn: Boolean) {
+        sessionManager.setIsLoggedIn(isLoggedIn)
+    }
     
     fun isTokenExpired(): Boolean {
         return sessionManager.isAccessTokenExpired()

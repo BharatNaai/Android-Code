@@ -67,6 +67,7 @@ dependencies {
 
     // Security
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation(libs.androidx.biometric)
 
     // Firebase (BOM)
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))

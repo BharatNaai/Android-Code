@@ -28,6 +28,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import com.app.bharatnaai.utils.BiometricHelper
+import androidx.biometric.BiometricPrompt
+import com.app.bharatnaai.data.session.SessionManager
 
 class LoginActivity : AppCompatActivity() {
 
@@ -38,6 +41,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
     private lateinit var loginbinding: ActivityLoginBinding
+    private lateinit var biometricHelper: BiometricHelper
 
     private val viewModel: LoginViewModel by lazy {
         ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application))
@@ -104,9 +108,13 @@ class LoginActivity : AppCompatActivity() {
         }
 
         initializeFirebase()
+        setupBiometric()
         setupClickListeners()
         setupTextWatchers()
         observeData()
+    }
+    private fun setupBiometric() {
+        biometricHelper = BiometricHelper(this)
     }
     
     private fun initializeFirebase() {
@@ -203,6 +211,74 @@ class LoginActivity : AppCompatActivity() {
         loginbinding.tvSignUpAction.setOnClickListener {
             navigateToRegister()
         }
+
+        loginbinding.btnBiometricLogin.setOnClickListener {
+            val sessionManager = SessionManager.getInstance(this)
+            if (sessionManager.hasTokens()) {
+                startBiometricAuth()
+            } else {
+                Toast.makeText(this, "Please log in with your email and password first to enable biometric login.", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun startBiometricAuth() {
+        biometricHelper.showBiometricPrompt(
+            title = "Biometric Login",
+            subtitle = "Log in using your fingerprint or face",
+            description = "Please authenticate to access your account",
+            callback = object : BiometricHelper.BiometricAuthCallback {
+                override fun onAuthSuccess(result: BiometricPrompt.AuthenticationResult) {
+                    runOnUiThread {
+                        Log.d(TAG, "Biometric authentication successful")
+                        Toast.makeText(this@LoginActivity, "Authentication successful!", Toast.LENGTH_SHORT).show()
+                        
+                        // Mark session as logged in
+                        val sessionManager = com.app.bharatnaai.data.session.SessionManager.getInstance(this@LoginActivity)
+                        sessionManager.setIsLoggedIn(true)
+                        
+                        // If this is a first-time biometric login and we don't have user info, 
+                        // we would normally fetch it here or use stored credentials.
+                        // For this implementation, we just ensure the session state is updated.
+                        
+                        navigateToMain()
+                    }
+                }
+
+                override fun onAuthError(errorCode: Int, errString: CharSequence) {
+                    runOnUiThread {
+                        Log.e(TAG, "Biometric error: $errString ($errorCode)")
+                        Toast.makeText(this@LoginActivity, "Authentication error: $errString", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onAuthFailure() {
+                    runOnUiThread {
+                        Toast.makeText(this@LoginActivity, "Authentication failed. Please try again.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onBiometricNotAvailable(message: String) {
+                    runOnUiThread {
+                        Toast.makeText(this@LoginActivity, message, Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                override fun onBiometricNotEnrolled() {
+                    runOnUiThread {
+                        // Prompt user to enroll
+                        androidx.appcompat.app.AlertDialog.Builder(this@LoginActivity)
+                            .setTitle("Biometrics Not Enrolled")
+                            .setMessage("No biometrics are enrolled on this device. Would you like to go to settings to enroll them?")
+                            .setPositiveButton("Settings") { _, _ ->
+                                biometricHelper.openBiometricSettings()
+                            }
+                            .setNegativeButton("Cancel", null)
+                            .show()
+                    }
+                }
+            }
+        )
     }
     
     private fun setupTextWatchers() {
